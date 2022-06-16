@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import TagMaker from "./components/Tags/TagMaker";
+import { useData } from "./context/stateContext";
 
 function QuestionInterface() {
-  const [questions, setQuestions] = useState([]);
+  // const [questions, setQuestions] = useState([]);
   const [questionInput, setQuestionInput] = useState("");
   
+  const {questions , setQuestions } = useData();
 
   function questionAdderHandler() {
     setQuestions((prev) => [...prev, { question: questionInput }]);
