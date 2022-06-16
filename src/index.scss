@@ -5,6 +5,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 18px;
+  padding: 1em;
 }
 
 code {
@@ -13,11 +15,17 @@ code {
 }
 
 button {
-  padding: 1em 2em;
+  padding: 0.5em 1em;
   background: black;
   color: white;
   border: none;
   border-radius: 4px;
   font-size: 18px;
   cursor: pointer;
+  margin: 0.2em;
+}
+
+textarea {
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
 }
