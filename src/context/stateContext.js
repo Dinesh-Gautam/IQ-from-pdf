@@ -7,21 +7,14 @@ export const useData = () => {
 };
 
 const useStateContext = () => {
-  const [state, setState] = useState(null);
   const [questions, setQuestions] = useState([]);
 
-  return { state, setState, questions, setQuestions };
+  return { questions, setQuestions };
 };
 
 function StateProvider({ children }) {
-  const { state, setState, questions, setQuestions } = useStateContext();
+  const value = useStateContext();
 
-  const value = {
-    state,
-    setState,
-    questions,
-    setQuestions,
-  };
   return (
     <stateContext.Provider value={value}>{children}</stateContext.Provider>
   );
