@@ -4,6 +4,7 @@ import { useStateContext } from "./context/stateContext";
 import stringSimilarity from "string-similarity";
 import QuestionAdder from "./components/QuestionAdder";
 import { v4 as uuid } from "uuid";
+import WordsToIgnore from "./components/WordsToIgnore";
 
 
 
@@ -177,6 +178,7 @@ const getSavedBtnHandler =() => {
       </div>
       <QuestionAdder />
       {/* <TagMaker /> */}
+      <WordsToIgnore />
     </div>
   );
 }

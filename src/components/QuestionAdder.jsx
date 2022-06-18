@@ -27,13 +27,21 @@ function QuestionAdder() {
     const value = event.target.value;
     setMonthInput((prev) => ({ ...prev, [name]: value }));
   }
-
+const {wordsToIgnore} = useStateContext();
   function questionAdderHandler() {
     const relatedId = questions.filter(({ question }) => {
+      const formattedInput = questionInput.split(' ').filter(word => !(wordsToIgnore.some(w => w === word))).join(" ").toLowerCase()
+      const formattedQuestion = question.split(' ').filter(word => !(wordsToIgnore.some(w => w === word))).join(" ").toLowerCase()
       const result = stringSimilarity.compareTwoStrings(
-        questionInput,
-        question
+        formattedInput,
+        formattedQuestion
       );
+
+      console.table({
+        formattedInputQuestion: formattedInput,
+        formattedQuestion: formattedQuestion,
+        result : result,
+      })
 
       if (result > 0.5) {
         return true;
