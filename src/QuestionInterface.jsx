@@ -5,6 +5,7 @@ import stringSimilarity from "string-similarity";
 import QuestionAdder from "./components/QuestionAdder";
 import { v4 as uuid } from "uuid";
 import WordsToIgnore from "./components/WordsToIgnore";
+import EditDate from "./components/EditDate";
 
 
 
@@ -12,7 +13,7 @@ function QuestionInterface() {
   // const [questions, setQuestions] = useState([]);
   const { questions, pdfQuestions, setQuestions } = useStateContext();
   const [selectedQuestion, setSelectedQuestion] = useState("");
-
+  const [edit, setEdit] = useState({editing : false})
 const copyBtnHandler = () => {
 let string = ""
 
@@ -50,6 +51,45 @@ const getSavedBtnHandler =() => {
   setQuestions(data)
 }
 
+const editDateHandler = (id , relatedId) => {
+
+  let obj = questions.find(q => q.id === id)
+  if(relatedId) {
+    obj = obj.related.find(q => q.id === relatedId)
+  }
+  setEdit({editing: true , parentId : id , relatedId : relatedId || null, obj})
+}
+
+const editDateSubmitHandler = (obj) => {
+  let newArr;
+  if(edit.relatedId) {
+  
+     newArr = questions.map(q => {
+      if(q.id === edit.parentId) {
+    return {...q , related : q.related.map(relatedQ => 
+      relatedQ.id === edit.relatedId ? 
+      ({...relatedQ , month :  obj.month , year :obj.year})
+      : relatedQ
+      )
+    }
+  }
+    else {
+        return q
+      }
+  })
+  }else {
+
+     newArr = questions.map(q => {
+      if(q.id === edit.parentId) {
+  return {...q , month : obj.month , year: obj.year}
+      }else {
+        return q
+      }
+    })
+  }
+  setQuestions(newArr)
+  setEdit({editing : false})
+}
 
   useEffect(() => {
     // console.log(questions);
@@ -143,10 +183,15 @@ const getSavedBtnHandler =() => {
                         className="questions-extras"
                       >{`${month} ${year}`}</span>
                     ))}
+
                   </div>
                   <div>
                     <span>{`${index + 1}. `}</span>
                     <span>{q.question}</span>
+                  { (selectedQuestion.id === q.id ) && <button onClick={() => {
+
+                  editDateHandler(q.id)
+                  }} style={{marginLeft : "2rem"}}>Edit Date</button>}
                   </div>
                 </div>
               );
@@ -169,6 +214,9 @@ const getSavedBtnHandler =() => {
                   <div className={"question"} key={index}>
                     <span className="questions-extras questions-extras-month">{`${q.month} ${q.year}`}</span>
                     <span>{q.question}</span>
+                    <button onClick={() => {
+            editDateHandler(selectedQuestion.id , q.id)
+}} style={{marginLeft : "2rem"}}>Edit Date</button>
                   </div>
                 );
               })}
@@ -176,6 +224,7 @@ const getSavedBtnHandler =() => {
           </div>
         )}
       </div>
+      {edit.editing && <EditDate prevMonth={edit.obj.month} prevYear= {edit.obj.year} editDateSubmitHandler={editDateSubmitHandler} />}
       <QuestionAdder />
       {/* <TagMaker /> */}
       <WordsToIgnore />

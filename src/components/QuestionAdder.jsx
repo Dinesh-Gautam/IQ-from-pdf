@@ -130,6 +130,7 @@ const {wordsToIgnore} = useStateContext();
             <option>18</option>
             <option>17</option>
             <option>16</option>
+            <option>15</option>
           </select>
         </span>
       </div>
