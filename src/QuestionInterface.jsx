@@ -68,12 +68,29 @@ function QuestionInterface() {
   return (
     <div>
       <div>
-        QuestionArea
-        <div>
+        <h4> QuestionArea</h4>
+        <div className="question-container">
           {questions &&
             questions.map((q, index) => {
               return (
-                <div key={index}>
+                <div className="question" key={index}>
+                  <div className="questions-extras-container">
+                    {q.related.length ? (
+                      <span className="questions-extras">
+                        {q.related.length}
+                      </span>
+                    ) : (
+                      ""
+                    )}
+
+                    {q.related.map(({ id, month, year }) => (
+                      <span
+                        key={id}
+                        className="questions-extras"
+                      >{`${month} ${year}`}</span>
+                    ))}
+                  </div>
+                  <span>{`${index + 1}. `}</span>
                   <span>{q.question}</span>
                 </div>
               );
@@ -82,6 +99,7 @@ function QuestionInterface() {
       </div>
 
       <div>
+        <h4>Add Question</h4>
         <textarea
           value={questionInput}
           onChange={(e) => setQuestionInput(e.target.value)}
@@ -143,7 +161,7 @@ function QuestionInterface() {
           </button>
         </div>
       </div>
-      <TagMaker />
+      {/* <TagMaker /> */}
     </div>
   );
 }
