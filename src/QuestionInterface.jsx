@@ -33,6 +33,23 @@ const copyWithRelatedButtonHandler = () => {
   console.log(string)
   navigator.clipboard.writeText(string)
 }
+
+const saveBtnHandler = () => {
+  localStorage.setItem('questions' , JSON.stringify(questions));
+  alert("saved")
+}
+
+const getSavedBtnHandler =() => {
+  const data = JSON.parse(localStorage.getItem('questions'));
+  if(!data)
+  {
+    alert("No data found in local storage");
+    return
+  }
+  setQuestions(data)
+}
+
+
   useEffect(() => {
     // console.log(questions);
   }, [questions]);
@@ -135,6 +152,12 @@ const copyWithRelatedButtonHandler = () => {
             })}
             <button onClick={copyBtnHandler}>Copy Questions</button>
             <button onClick={copyWithRelatedButtonHandler}>Copy with Related Questions</button>
+
+            <div>
+              <button onClick={saveBtnHandler}>Save to local Storage</button>
+            <button onClick={getSavedBtnHandler}>Get from local Storage</button>
+            <button onClick={() => localStorage.clear() || alert("cleared")}>Clear Local Storage</button>
+            </div>
         </div>
         {selectedQuestion && !!selectedQuestion.related.length && (
           <div>
