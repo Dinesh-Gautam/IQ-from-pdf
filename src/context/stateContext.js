@@ -9,7 +9,7 @@ export const useStateContext = () => {
 function StateProvider({ children }) {
   const [questions, setQuestions] = useState([]);
   const [pdfQuestions, setPdfQuestions] = useState([]);
-  const [wordsToIgnore, setWordsToIgnore] = useState([]);
+  const [wordsToIgnore, setWordsToIgnore] = useState(null);
   const value = {
     questions,
     setQuestions,

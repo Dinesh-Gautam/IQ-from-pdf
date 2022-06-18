@@ -7,89 +7,107 @@ import { v4 as uuid } from "uuid";
 import WordsToIgnore from "./components/WordsToIgnore";
 import EditDate from "./components/EditDate";
 
-
-
 function QuestionInterface() {
   // const [questions, setQuestions] = useState([]);
   const { questions, pdfQuestions, setQuestions } = useStateContext();
   const [selectedQuestion, setSelectedQuestion] = useState("");
-  const [edit, setEdit] = useState({editing : false})
-const copyBtnHandler = () => {
-let string = ""
+  const [edit, setEdit] = useState({ editing: false });
+  const copyBtnHandler = () => {
+    let string = "";
 
-  questions.forEach(({question, related} , index) => {
-    string+= `${related.length ? `(${related.length + 1} ${related.map(e => `[${e.month} ${e.year}]`)})` : ""} ${question} \n\n`;
-  })
+    questions.forEach(({ question, related }, index) => {
+      string += `${
+        related.length
+          ? `(${related.length + 1} ${related.map(
+              (e) => `[${e.month} ${e.year}]`
+            )})`
+          : ""
+      } ${question} \n\n`;
+    });
 
-  console.log(string)
-  navigator.clipboard.writeText(string)
-}
+    console.log(string);
+    navigator.clipboard.writeText(string);
+  };
 
-const copyWithRelatedButtonHandler = () => {
-  let string = ""
+  const copyWithRelatedButtonHandler = () => {
+    let string = "";
 
-  questions.forEach(({question, related} , index) => {
-    string+= `${related.length ? `(${related.length + 1} ${related.map(e => `[${e.month} ${e.year}]`)})` : ""} ${question}\n\t${related.length ?  related.map(e => `- (${e.month} ${e.year}) ${e.question}`).join("\n\t") : ""}\n\n`;
-  })
+    questions.forEach(({ question, related }, index) => {
+      string += `${
+        related.length
+          ? `(${related.length + 1} ${related.map(
+              (e) => `[${e.month} ${e.year}]`
+            )})`
+          : ""
+      } ${question}\n\t${
+        related.length
+          ? related
+              .map((e) => `- (${e.month} ${e.year}) ${e.question}`)
+              .join("\n\t")
+          : ""
+      }\n\n`;
+    });
 
-  console.log(string)
-  navigator.clipboard.writeText(string)
-}
+    console.log(string);
+    navigator.clipboard.writeText(string);
+  };
 
-const saveBtnHandler = () => {
-  localStorage.setItem('questions' , JSON.stringify(questions));
-  alert("saved")
-}
+  const saveBtnHandler = () => {
+    localStorage.setItem("questions", JSON.stringify(questions));
+    alert("saved");
+  };
 
-const getSavedBtnHandler =() => {
-  const data = JSON.parse(localStorage.getItem('questions'));
-  if(!data)
-  {
-    alert("No data found in local storage");
-    return
-  }
-  setQuestions(data)
-}
-
-const editDateHandler = (id , relatedId) => {
-
-  let obj = questions.find(q => q.id === id)
-  if(relatedId) {
-    obj = obj.related.find(q => q.id === relatedId)
-  }
-  setEdit({editing: true , parentId : id , relatedId : relatedId || null, obj})
-}
-
-const editDateSubmitHandler = (obj) => {
-  let newArr;
-  if(edit.relatedId) {
-  
-     newArr = questions.map(q => {
-      if(q.id === edit.parentId) {
-    return {...q , related : q.related.map(relatedQ => 
-      relatedQ.id === edit.relatedId ? 
-      ({...relatedQ , month :  obj.month , year :obj.year})
-      : relatedQ
-      )
+  const getSavedBtnHandler = () => {
+    const data = JSON.parse(localStorage.getItem("questions"));
+    if (!data) {
+      alert("No data found in local storage");
+      return;
     }
-  }
-    else {
-        return q
-      }
-  })
-  }else {
+    setQuestions(data);
+  };
 
-     newArr = questions.map(q => {
-      if(q.id === edit.parentId) {
-  return {...q , month : obj.month , year: obj.year}
-      }else {
-        return q
-      }
-    })
-  }
-  setQuestions(newArr)
-  setEdit({editing : false})
-}
+  const editDateHandler = (id, relatedId) => {
+    let obj = questions.find((q) => q.id === id);
+    if (relatedId) {
+      obj = obj.related.find((q) => q.id === relatedId);
+    }
+    setEdit({ editing: true, parentId: id, relatedId: relatedId || null, obj });
+  };
+
+  const editDateSubmitHandler = (obj) => {
+    let newArr;
+    if (edit.relatedId) {
+      newArr = questions.map((q) => {
+        if (q.id === edit.parentId) {
+          return {
+            ...q,
+            related: q.related.map((relatedQ) =>
+              relatedQ.id === edit.relatedId
+                ? { ...relatedQ, month: obj.month, year: obj.year }
+                : relatedQ
+            ),
+          };
+        } else {
+          return q;
+        }
+      });
+    } else {
+      newArr = questions.map((q) => {
+        if (q.id === edit.parentId) {
+          return { ...q, month: obj.month, year: obj.year };
+        } else {
+          return q;
+        }
+      });
+    }
+    setQuestions(newArr);
+    setEdit({ editing: false });
+  };
+
+  const deleteHandler = (id) => {
+    const newArr = questions.filter((q) => q.id !== id);
+    setQuestions(newArr);
+  };
 
   useEffect(() => {
     // console.log(questions);
@@ -183,27 +201,47 @@ const editDateSubmitHandler = (obj) => {
                         className="questions-extras"
                       >{`${month} ${year}`}</span>
                     ))}
-
                   </div>
                   <div>
                     <span>{`${index + 1}. `}</span>
                     <span>{q.question}</span>
-                  { (selectedQuestion.id === q.id ) && <button onClick={() => {
+                    {selectedQuestion.id === q.id && (
+                      <button
+                        onClick={() => {
+                          editDateHandler(q.id);
+                        }}
+                        style={{ marginLeft: "2rem" }}
+                      >
+                        Edit Date
+                      </button>
+                    )}
 
-                  editDateHandler(q.id)
-                  }} style={{marginLeft : "2rem"}}>Edit Date</button>}
+                    {selectedQuestion.id === q.id && (
+                      <button
+                        onClick={() => {
+                          deleteHandler(q.id);
+                        }}
+                        style={{ marginLeft: "2rem" }}
+                      >
+                        Delete
+                      </button>
+                    )}
                   </div>
                 </div>
               );
             })}
-            <button onClick={copyBtnHandler}>Copy Questions</button>
-            <button onClick={copyWithRelatedButtonHandler}>Copy with Related Questions</button>
+          <button onClick={copyBtnHandler}>Copy Questions</button>
+          <button onClick={copyWithRelatedButtonHandler}>
+            Copy with Related Questions
+          </button>
 
-            <div>
-              <button onClick={saveBtnHandler}>Save to local Storage</button>
+          <div>
+            <button onClick={saveBtnHandler}>Save to local Storage</button>
             <button onClick={getSavedBtnHandler}>Get from local Storage</button>
-            <button onClick={() => localStorage.clear() || alert("cleared")}>Clear Local Storage</button>
-            </div>
+            <button onClick={() => localStorage.clear() || alert("cleared")}>
+              Clear Local Storage
+            </button>
+          </div>
         </div>
         {selectedQuestion && !!selectedQuestion.related.length && (
           <div>
@@ -214,9 +252,14 @@ const editDateSubmitHandler = (obj) => {
                   <div className={"question"} key={index}>
                     <span className="questions-extras questions-extras-month">{`${q.month} ${q.year}`}</span>
                     <span>{q.question}</span>
-                    <button onClick={() => {
-            editDateHandler(selectedQuestion.id , q.id)
-}} style={{marginLeft : "2rem"}}>Edit Date</button>
+                    <button
+                      onClick={() => {
+                        editDateHandler(selectedQuestion.id, q.id);
+                      }}
+                      style={{ marginLeft: "2rem" }}
+                    >
+                      Edit Date
+                    </button>
                   </div>
                 );
               })}
@@ -224,7 +267,13 @@ const editDateSubmitHandler = (obj) => {
           </div>
         )}
       </div>
-      {edit.editing && <EditDate prevMonth={edit.obj.month} prevYear= {edit.obj.year} editDateSubmitHandler={editDateSubmitHandler} />}
+      {edit.editing && (
+        <EditDate
+          prevMonth={edit.obj.month}
+          prevYear={edit.obj.year}
+          editDateSubmitHandler={editDateSubmitHandler}
+        />
+      )}
       <QuestionAdder />
       {/* <TagMaker /> */}
       <WordsToIgnore />
