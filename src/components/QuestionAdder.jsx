@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useStateContext } from "../context/stateContext";
 import stringSimilarity from "string-similarity";
 import { v4 as uuid } from "uuid";
 
 function QuestionAdder() {
+  const inputRef = useRef();
+
   const { questions, setQuestions } = useStateContext();
 
   const [questionInput, setQuestionInput] = useState("");
@@ -58,12 +60,14 @@ function QuestionAdder() {
       setQuestions((prev) => [...prev, { ...QuestionObj, related: [] }]);
     }
     setQuestionInput("");
+    inputRef.current.focus()
   }
 
   return (
     <form>
       <h4>Add Question</h4>
       <input
+        ref={inputRef}
         style={{width : "100%"}}
         type="text"
         value={questionInput}
