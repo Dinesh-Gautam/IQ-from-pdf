@@ -8,9 +8,9 @@ import StateProvider from "./context/stateContext";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    {/* <App /> */}
     <StateProvider>
       <QuestionInterface />
+      <App />
     </StateProvider>
   </React.StrictMode>
 );

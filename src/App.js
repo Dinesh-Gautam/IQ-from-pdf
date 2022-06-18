@@ -5,42 +5,36 @@ import stringSimilarity from "string-similarity";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 
 import { useEffect, useRef, useState } from "react";
+import { useStateContext } from "./context/stateContext";
 function App() {
-  const inputRef = useRef();
+  const { pdfQuestions, setPdfQuestions } = useStateContext();
   const [fileURL, setFileURL] = useState(null);
+
+  const [cachedPdfQuestions, setCachedPdfQuestions] = useState([]);
+
   useEffect(() => {
-    const result = stringSimilarity.compareTwoStrings(
-      "What do you mean by addressing mode? Explain any two",
-      "What do you mean by addressing mode? Explain any five."
-      // "Write in brief about Cache memory."
-    );
     GlobalWorkerOptions.workerSrc =
       window.location.origin + "/pdf.worker.min.js";
-
-    console.log(result);
   }, []);
 
   function getPageText(pageNum, PDFDocumentInstance) {
-    // Return a Promise that is solved once the text of the page is retrieven
-    return new Promise(function (resolve) {
-      PDFDocumentInstance.getPage(pageNum).then(function (pdfPage) {
-        // The main trick to obtain the text of the PDF page, use the getTextContent method
-        pdfPage.getTextContent().then(function (textContent) {
-          var textItems = textContent.items;
-          var finalString = [];
+    return new Promise(async function (resolve) {
+      const pdfPage = await PDFDocumentInstance.getPage(pageNum);
+      const textContent = await pdfPage.getTextContent();
 
-          // Concatenate the string of the item to the final string
-          for (var i = 0; i < textItems.length; i++) {
-            var item = textItems[i];
-            if (item.str.length < 10) continue;
-            finalString.push(item.str);
-          }
+      var textItems = textContent.items
+        .filter((item) => item.str.length > 10)
+        .map((item) => item.str);
+      // var finalString = [];
 
-          // Solve promise with the text retrieven from the page
-          resolve(textItems);
-          pdfPage.cleanup();
-        });
-      });
+      // for (var i = 0; i < textItems.length; i++) {
+      //   var item = textItems[i];
+      //   if (item.str.length < 10) continue;
+      //   finalString.push(item.str);
+      // }
+
+      resolve(textItems);
+      pdfPage.cleanup();
     });
   }
 
@@ -48,22 +42,28 @@ function App() {
     if (!fileURL) return;
     fileURL.forEach(async (url) => {
       const task = getDocument(url);
-      console.log(task);
       const doc = await task.promise;
-
-      var totalPages = doc.numPages;
       var pageNumber = 1;
 
-      // Extract the text
-      getPageText(pageNumber, doc).then(function (textPage) {
-        // Show the text of the page in the console
-        console.log(textPage);
-      });
+      const textPage = await getPageText(pageNumber, doc);
+
+      setCachedPdfQuestions((prev) => [...prev, textPage]);
     });
   }, [fileURL]);
 
-  function fileChangeHandler() {
-    const input = inputRef.current;
+  useEffect(() => {
+    if (
+      fileURL &&
+      cachedPdfQuestions &&
+      cachedPdfQuestions.length === fileURL.length
+    ) {
+      setPdfQuestions(cachedPdfQuestions);
+      setCachedPdfQuestions([]);
+    }
+  }, [cachedPdfQuestions]);
+
+  function fileChangeHandler(event) {
+    const input = event.target;
 
     for (const file of input.files) {
       const url = URL.createObjectURL(file);
@@ -75,9 +75,9 @@ function App() {
 
   return (
     <div className="App">
-      <input ref={inputRef} type="file" onChange={fileChangeHandler} multiple />
+      <input type="file" onChange={fileChangeHandler} multiple />
 
-      {fileURL &&
+      {/* {fileURL &&
         fileURL.map((url, index) => {
           return (
             <iframe
@@ -88,7 +88,7 @@ function App() {
               src={url}
             />
           );
-        })}
+        })} */}
     </div>
   );
 }

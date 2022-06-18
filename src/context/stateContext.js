@@ -8,7 +8,8 @@ export const useStateContext = () => {
 
 function StateProvider({ children }) {
   const [questions, setQuestions] = useState([]);
-  const value = { questions, setQuestions };
+  const [pdfQuestions, setPdfQuestions] = useState([]);
+  const value = { questions, setQuestions, pdfQuestions, setPdfQuestions };
   return (
     <stateContext.Provider value={value}>{children}</stateContext.Provider>
   );
