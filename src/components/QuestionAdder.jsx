@@ -9,8 +9,8 @@ function QuestionAdder() {
   const [questionInput, setQuestionInput] = useState("");
 
   const [monthInput, setMonthInput] = useState({
-    month: "January",
-    year: "2022",
+    month: "Jan",
+    year: "22",
   });
 
   const QuestionObj = {
@@ -61,16 +61,18 @@ function QuestionAdder() {
   }
 
   return (
-    <div>
+    <form>
       <h4>Add Question</h4>
-      <textarea
+      <input
+        style={{width : "100%"}}
+        type="text"
         value={questionInput}
         onChange={(e) => setQuestionInput(e.target.value)}
         name="question input"
         id="question_input"
         cols="30"
         rows="10"
-      ></textarea>
+      />
       {/* <div>
       <input
         value={monthInput}
@@ -87,18 +89,18 @@ function QuestionAdder() {
             id="month"
             name="month"
           >
-            <option>January</option>
-            <option>February</option>
-            <option>March</option>
-            <option>April</option>
+            <option>Jan</option>
+            <option>Feb</option>
+            <option>Mar</option>
+            <option>Apr</option>
             <option>May</option>
-            <option>June</option>
-            <option>July</option>
-            <option>August</option>
-            <option>September</option>
-            <option>October</option>
-            <option>November</option>
-            <option>December</option>
+            <option>Jun</option>
+            <option>Jul</option>
+            <option>Aug</option>
+            <option>Sep</option>
+            <option>Oct</option>
+            <option>Nov</option>
+            <option>Dec</option>
           </select>
         </span>
         <span>
@@ -109,21 +111,22 @@ function QuestionAdder() {
             id="year"
             name="year"
           >
-            <option>2022</option>
-            <option>2021</option>
-            <option>2020</option>
-            <option>2019</option>
-            <option>20218</option>
-            <option>2016</option>
+            <option>22</option>
+            <option>21</option>
+            <option>20</option>
+            <option>19</option>
+            <option>18</option>
+            <option>17</option>
+            <option>16</option>
           </select>
         </span>
       </div>
       <div>
-        <button disabled={!questionInput} onClick={questionAdderHandler}>
+        <button type="submit" disabled={!questionInput} onClick={questionAdderHandler}>
           Add Question
         </button>
       </div>
-    </div>
+    </form>
   );
 }
 

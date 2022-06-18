@@ -5,11 +5,34 @@ import stringSimilarity from "string-similarity";
 import QuestionAdder from "./components/QuestionAdder";
 import { v4 as uuid } from "uuid";
 
+
+
 function QuestionInterface() {
   // const [questions, setQuestions] = useState([]);
   const { questions, pdfQuestions, setQuestions } = useStateContext();
   const [selectedQuestion, setSelectedQuestion] = useState("");
 
+const copyBtnHandler = () => {
+let string = ""
+
+  questions.forEach(({question, related} , index) => {
+    string+= `${related.length ? `(${related.length + 1} ${related.map(e => `[${e.month} ${e.year}]`)})` : ""} ${question} \n\n`;
+  })
+
+  console.log(string)
+  navigator.clipboard.writeText(string)
+}
+
+const copyWithRelatedButtonHandler = () => {
+  let string = ""
+
+  questions.forEach(({question, related} , index) => {
+    string+= `${related.length ? `(${related.length + 1} ${related.map(e => `[${e.month} ${e.year}]`)})` : ""} ${question}\n\t${related.length ?  related.map(e => `- (${e.month} ${e.year}) ${e.question}`).join("\n\t") : ""}\n\n`;
+  })
+
+  console.log(string)
+  navigator.clipboard.writeText(string)
+}
   useEffect(() => {
     // console.log(questions);
   }, [questions]);
@@ -110,6 +133,8 @@ function QuestionInterface() {
                 </div>
               );
             })}
+            <button onClick={copyBtnHandler}>Copy Questions</button>
+            <button onClick={copyWithRelatedButtonHandler}>Copy with Related Questions</button>
         </div>
         {selectedQuestion && !!selectedQuestion.related.length && (
           <div>
