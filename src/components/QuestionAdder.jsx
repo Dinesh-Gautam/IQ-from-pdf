@@ -30,8 +30,8 @@ function QuestionAdder() {
 const {wordsToIgnore} = useStateContext();
   function questionAdderHandler() {
     const relatedId = questions.filter(({ question }) => {
-      const formattedInput = questionInput.split(' ').filter(word => !(wordsToIgnore.some(w => w === word))).join(" ").toLowerCase()
-      const formattedQuestion = question.split(' ').filter(word => !(wordsToIgnore.some(w => w === word))).join(" ").toLowerCase()
+      const formattedInput = questionInput.toLowerCase().split(' ').filter(word => !(wordsToIgnore.some(w => w === word))).join(" ")
+      const formattedQuestion = question.toLowerCase().split(' ').filter(word => !(wordsToIgnore.some(w => w === word))).join(" ")
       const result = stringSimilarity.compareTwoStrings(
         formattedInput,
         formattedQuestion
@@ -43,7 +43,7 @@ const {wordsToIgnore} = useStateContext();
         result : result,
       })
 
-      if (result > 0.5) {
+      if (result > 0.6) {
         return true;
       } else {
         return false;
