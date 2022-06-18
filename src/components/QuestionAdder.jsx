@@ -27,11 +27,19 @@ function QuestionAdder() {
     const value = event.target.value;
     setMonthInput((prev) => ({ ...prev, [name]: value }));
   }
-const {wordsToIgnore} = useStateContext();
+  const { wordsToIgnore } = useStateContext();
   function questionAdderHandler() {
     const relatedId = questions.filter(({ question }) => {
-      const formattedInput = questionInput.toLowerCase().split(' ').filter(word => !(wordsToIgnore.some(w => w === word))).join(" ")
-      const formattedQuestion = question.toLowerCase().split(' ').filter(word => !(wordsToIgnore.some(w => w === word))).join(" ")
+      const formattedInput = questionInput
+        .toLowerCase()
+        .split(" ")
+        .filter((word) => !wordsToIgnore.some((w) => w === word))
+        .join(" ");
+      const formattedQuestion = question
+        .toLowerCase()
+        .split(" ")
+        .filter((word) => !wordsToIgnore.some((w) => w === word))
+        .join(" ");
       const result = stringSimilarity.compareTwoStrings(
         formattedInput,
         formattedQuestion
@@ -40,10 +48,10 @@ const {wordsToIgnore} = useStateContext();
       console.table({
         formattedInputQuestion: formattedInput,
         formattedQuestion: formattedQuestion,
-        result : result,
-      })
+        result: result,
+      });
 
-      if (result > 0.6) {
+      if (result > 0.7) {
         return true;
       } else {
         return false;
@@ -68,7 +76,7 @@ const {wordsToIgnore} = useStateContext();
       setQuestions((prev) => [...prev, { ...QuestionObj, related: [] }]);
     }
     setQuestionInput("");
-    inputRef.current.focus()
+    inputRef.current.focus();
   }
 
   return (
@@ -76,7 +84,7 @@ const {wordsToIgnore} = useStateContext();
       <h4>Add Question</h4>
       <input
         ref={inputRef}
-        style={{width : "100%"}}
+        style={{ width: "100%" }}
         type="text"
         value={questionInput}
         onChange={(e) => setQuestionInput(e.target.value)}
@@ -135,7 +143,11 @@ const {wordsToIgnore} = useStateContext();
         </span>
       </div>
       <div>
-        <button type="submit" disabled={!questionInput} onClick={questionAdderHandler}>
+        <button
+          type="submit"
+          disabled={!questionInput}
+          onClick={questionAdderHandler}
+        >
           Add Question
         </button>
       </div>
