@@ -39,7 +39,7 @@ textarea {
 }
 
 .question-container {
-  border: 1px solid black;
+  // border: 1px solid black;
   border-radius: 6px;
   padding: 1rem;
 
@@ -50,7 +50,11 @@ textarea {
   border-radius: 6px;
 
   &:hover {
-    box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  }
+
+  &.selected {
+    border: 1px solid black;
   }
 }
 
@@ -67,4 +71,11 @@ textarea {
   font-weight: bold;
   letter-spacing: 1px;
   color: white;
+}
+
+.questions-extras-month {
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+  margin-right: 1rem;
 }

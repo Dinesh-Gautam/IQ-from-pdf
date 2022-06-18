@@ -8,6 +8,7 @@ import { v4 as uuid } from "uuid";
 function QuestionInterface() {
   // const [questions, setQuestions] = useState([]);
   const [questionInput, setQuestionInput] = useState("");
+  const [selectedQuestion, setSelectedQuestion] = useState("");
   const [monthInput, setMonthInput] = useState({
     month: "January",
     year: "2022",
@@ -73,8 +74,16 @@ function QuestionInterface() {
           {questions &&
             questions.map((q, index) => {
               return (
-                <div className="question" key={index}>
+                <div
+                  onClick={(e) => setSelectedQuestion(q)}
+                  className={
+                    "question " +
+                    (selectedQuestion.id === q.id ? "selected" : "")
+                  }
+                  key={index}
+                >
                   <div className="questions-extras-container">
+                    <span className="questions-extras questions-extras-month">{`${q.month} ${q.year}`}</span>
                     {q.related.length ? (
                       <span className="questions-extras">
                         {q.related.length}
@@ -96,6 +105,37 @@ function QuestionInterface() {
               );
             })}
         </div>
+        {selectedQuestion && !!selectedQuestion.related.length && (
+          <div>
+            <h4>Related Questions: </h4>
+            <div>
+              {selectedQuestion.related.map((q, index) => {
+                return (
+                  <div className={"question"} key={index}>
+                    {/* <div className="questions-extras-container">
+                        {q.related.length ? (
+                          <span className="questions-extras">
+                            {q.related.length}
+                          </span>
+                        ) : (
+                          ""
+                        )}
+
+                        {q.related.map(({ id, month, year }) => (
+                          <span
+                            key={id}
+                            className="questions-extras"
+                          >{`${month} ${year}`}</span>
+                        ))}
+                      </div> */}
+                    <span className="questions-extras questions-extras-month">{`${q.month} ${q.year}`}</span>
+                    <span>{q.question}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       <div>
