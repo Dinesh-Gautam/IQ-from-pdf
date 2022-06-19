@@ -73,8 +73,10 @@ function SaveQuestions() {
             name="save-data-name-select"
             id="save-data-name-select"
           >
-            {savedNamesState.map((name) => (
-              <option value={name}>{name}</option>
+            {savedNamesState.map((name, index) => (
+              <option key={index} value={name}>
+                {name}
+              </option>
             ))}
           </select>
           <button onClick={getSavedBtnHandler}>Get from local Storage</button>
