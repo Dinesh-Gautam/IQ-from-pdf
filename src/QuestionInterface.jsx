@@ -7,6 +7,7 @@ import { parse, v4 as uuid } from "uuid";
 import WordsToIgnore from "./components/WordsToIgnore";
 import EditDate from "./components/EditDate";
 import { NlpSentenceEncoderComponent } from "./Tensorflow/nlp";
+import SaveQuestions from "./components/SaveQuestions";
 
 function QuestionInterface() {
   useEffect(() => {
@@ -140,20 +141,6 @@ function QuestionInterface() {
   //   console.log(string);
   //   navigator.clipboard.writeText(string);
   // };
-
-  const saveBtnHandler = () => {
-    localStorage.setItem("questions", JSON.stringify(questions));
-    alert("saved");
-  };
-
-  const getSavedBtnHandler = () => {
-    const data = JSON.parse(localStorage.getItem("questions"));
-    if (!data) {
-      alert("No data found in local storage");
-      return;
-    }
-    setQuestions(data);
-  };
 
   const editDateHandler = (id, relatedId) => {
     let obj = questions.find((q) => q.id === id);
@@ -453,14 +440,8 @@ function QuestionInterface() {
               Copy with Related Questions
             </button> */}
       </div>
-      <div>
-        <h4>Save Data:</h4>
-        <button onClick={saveBtnHandler}>Save to local Storage</button>
-        <button onClick={getSavedBtnHandler}>Get from local Storage</button>
-        <button onClick={() => localStorage.clear() || alert("cleared")}>
-          Clear Local Storage
-        </button>
-      </div>
+
+      <SaveQuestions />
 
       {/* <TagMaker /> */}
       <WordsToIgnore />
