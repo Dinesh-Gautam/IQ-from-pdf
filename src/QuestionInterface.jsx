@@ -3,7 +3,7 @@ import TagMaker from "./components/Tags/TagMaker";
 import { useStateContext } from "./context/stateContext";
 import stringSimilarity from "string-similarity";
 import QuestionAdder from "./components/QuestionAdder";
-import { v4 as uuid } from "uuid";
+import { parse, v4 as uuid } from "uuid";
 import WordsToIgnore from "./components/WordsToIgnore";
 import EditDate from "./components/EditDate";
 
@@ -13,6 +13,54 @@ function QuestionInterface() {
   const [selectedQuestion, setSelectedQuestion] = useState("");
   const [checkbox, setCheckbox] = useState({});
   const [edit, setEdit] = useState({ editing: false });
+  const [sort, setSort] = useState({
+    questionSort: "relatedCount",
+    orderBy: "dsc",
+  });
+
+  const sortSelectChange = (e) => {
+    const { name, value } = e.target;
+
+    setSort((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const sortByRelatedCount = (orderBy) => {
+    console.log("sorting by related count in : " + orderBy);
+    let newArr;
+    if (orderBy === "dsc") {
+      newArr = questions.sort((a, b) => b.related.length - a.related.length);
+    } else {
+      newArr = questions.sort((a, b) => a.related.length - b.related.length);
+    }
+    setQuestions([...newArr]);
+  };
+
+  const sortByDateYear = (orderBy) => {
+    console.log("sorting by date in : " + orderBy);
+    let newArr;
+    if (orderBy === "dsc") {
+      newArr = questions.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+    } else {
+      newArr = questions.sort((a, b) => parseInt(a.year) - parseInt(b.year));
+    }
+    setQuestions([...newArr]);
+  };
+
+  const sortBtnHandler = () => {
+    const { questionSort, orderBy } = sort;
+
+    switch (questionSort) {
+      case "date":
+        sortByDateYear(orderBy);
+        break;
+      case "relatedCount":
+        sortByRelatedCount(orderBy);
+        break;
+      default:
+        sortByRelatedCount(orderBy);
+    }
+  };
+
   const copyBtnHandler = () => {
     let string = "";
 
@@ -71,22 +119,22 @@ function QuestionInterface() {
     navigator.clipboard.writeText(string);
   };
 
-  const copyWithRelatedButtonHandler = () => {
-    let string = "";
+  // const copyWithRelatedButtonHandler = () => {
+  //   let string = "";
 
-    questions.forEach(({ question, related }, index) => {
-      string += `${
-        related.length
-          ? `(${related.length + 1} ${related.map(
-              (e) => `[${e.month} ${e.year}]`
-            )})`
-          : ""
-      } ${question}\n\t`;
-    });
+  //   questions.forEach(({ question, related }, index) => {
+  //     string += `${
+  //       related.length
+  //         ? `(${related.length + 1} ${related.map(
+  //             (e) => `[${e.month} ${e.year}]`
+  //           )})`
+  //         : ""
+  //     } ${question}\n\t`;
+  //   });
 
-    console.log(string);
-    navigator.clipboard.writeText(string);
-  };
+  //   console.log(string);
+  //   navigator.clipboard.writeText(string);
+  // };
 
   const saveBtnHandler = () => {
     localStorage.setItem("questions", JSON.stringify(questions));
@@ -217,6 +265,38 @@ function QuestionInterface() {
       <div className="question-area-container">
         <div className="question-container">
           <h4> QuestionArea</h4>
+          {questions.length > 0 && (
+            <>
+              <div>
+                <span>Sort:</span>
+                <select
+                  onChange={sortSelectChange}
+                  value={sort.questionSort}
+                  name="questionSort"
+                  id="questionSort"
+                >
+                  <option value="relatedCount">Related count</option>
+                  <option value="date">Date year</option>
+                </select>
+                <span>Order by:</span>
+                <select
+                  onChange={sortSelectChange}
+                  value={sort.orderBy}
+                  name="orderBy"
+                  id="orderBy"
+                >
+                  <option value="dsc">dsc</option>
+                  <option value="asc">asc</option>
+                </select>
+                <button onClick={sortBtnHandler}>Sort</button>
+              </div>
+              <div>
+                <h4>
+                  {`Questions are sorted by '${sort.questionSort}' in '${sort.orderBy}' order.`}
+                </h4>
+              </div>
+            </>
+          )}
           {questions &&
             questions.map((q, index) => {
               return (
