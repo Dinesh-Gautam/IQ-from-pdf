@@ -6,8 +6,13 @@ import QuestionAdder from "./components/QuestionAdder";
 import { parse, v4 as uuid } from "uuid";
 import WordsToIgnore from "./components/WordsToIgnore";
 import EditDate from "./components/EditDate";
+import { NlpSentenceEncoderComponent } from "./Tensorflow/nlp";
 
 function QuestionInterface() {
+  useEffect(() => {
+    // console.log(nlp);
+  }, []);
+
   // const [questions, setQuestions] = useState([]);
   const { questions, pdfQuestions, setQuestions } = useStateContext();
   const [selectedQuestion, setSelectedQuestion] = useState("");
@@ -209,6 +214,11 @@ function QuestionInterface() {
   useEffect(() => {
     if (!questions.length && pdfQuestions && !pdfQuestions.length) return;
     // console.log(pdfQuestions);
+
+    // const nlp = new NlpSentenceEncoderComponent();
+    // nlp.Init(pdfQuestions);
+
+    // return;
 
     pdfQuestions.forEach((pdfPage) => {
       pdfPage.forEach((questionInput) => {
