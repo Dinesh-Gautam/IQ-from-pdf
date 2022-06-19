@@ -11,18 +11,60 @@ function QuestionInterface() {
   // const [questions, setQuestions] = useState([]);
   const { questions, pdfQuestions, setQuestions } = useStateContext();
   const [selectedQuestion, setSelectedQuestion] = useState("");
+  const [checkbox, setCheckbox] = useState({});
   const [edit, setEdit] = useState({ editing: false });
   const copyBtnHandler = () => {
     let string = "";
 
-    questions.forEach(({ question, related }, index) => {
-      string += `${
-        related.length
-          ? `(${related.length + 1} ${related.map(
-              (e) => `[${e.month} ${e.year}]`
-            )})`
-          : ""
-      } ${question} \n\n`;
+    questions.forEach(({ question, related, month, year }, index) => {
+      if (checkbox.importantQuestion) {
+        string +=
+          related.length > 0
+            ? `${
+                related.length && (checkbox.relatedCount || checkbox.Date)
+                  ? `(${checkbox.relatedCount ? related.length + 1 : ""} ${
+                      checkbox.Date
+                        ? `[${month} ${year}],` +
+                          related.map((e) => `[${e.month} ${e.year}]`)
+                        : ""
+                    }) : `
+                  : ""
+              } ${question} \n${
+                checkbox.relatedQuestions && related.length
+                  ? related
+                      .map(
+                        (e) =>
+                          `\t- ${
+                            related.Date ? `(${e.month} ${e.year})` : ""
+                          } ${e.question}`
+                      )
+                      .join("\n")
+                  : ""
+              }\n\n`
+            : "";
+      } else {
+        string += `${
+          related.length && (checkbox.relatedCount || checkbox.Date)
+            ? `(${checkbox.relatedCount ? related.length + 1 : ""} ${
+                checkbox.Date
+                  ? `[${month} ${year}],` +
+                    related.map((e) => `[${e.month} ${e.year}]`)
+                  : ""
+              }) : `
+            : ""
+        } ${question} \n${
+          checkbox.relatedQuestions && related.length
+            ? related
+                .map(
+                  (e) =>
+                    `\t- ${related.Date ? `(${e.month} ${e.year})` : ""} ${
+                      e.question
+                    }`
+                )
+                .join("\n")
+            : ""
+        }\n\n`;
+      }
     });
 
     console.log(string);
@@ -39,13 +81,7 @@ function QuestionInterface() {
               (e) => `[${e.month} ${e.year}]`
             )})`
           : ""
-      } ${question}\n\t${
-        related.length
-          ? related
-              .map((e) => `- (${e.month} ${e.year}) ${e.question}`)
-              .join("\n\t")
-          : ""
-      }\n\n`;
+      } ${question}\n\t`;
     });
 
     console.log(string);
@@ -107,6 +143,13 @@ function QuestionInterface() {
   const deleteHandler = (id) => {
     const newArr = questions.filter((q) => q.id !== id);
     setQuestions(newArr);
+  };
+
+  const checkboxChangeHandler = (event) => {
+    const target = event.target;
+    const { name, checked } = target;
+
+    setCheckbox((prev) => ({ ...prev, [name]: checked }));
   };
 
   useEffect(() => {
@@ -230,12 +273,62 @@ function QuestionInterface() {
                 </div>
               );
             })}
-          <button onClick={copyBtnHandler}>Copy Questions</button>
-          <button onClick={copyWithRelatedButtonHandler}>
-            Copy with Related Questions
-          </button>
+          <div>
+            <h4>Copy Data:</h4>
+            <div>
+              <h5>Additions: </h5>
+              <div>
+                <input
+                  onChange={checkboxChangeHandler}
+                  checked={checkbox.importantQuestion || false}
+                  id="importantQuestion"
+                  type="checkbox"
+                  name="importantQuestion"
+                />
+                <label htmlFor="importantQuestion">Important Questions</label>
+              </div>
+
+              <div>
+                <input
+                  onChange={checkboxChangeHandler}
+                  checked={checkbox.relatedQuestions || false}
+                  id="relatedQuestions"
+                  type="checkbox"
+                  name="relatedQuestions"
+                />
+                <label htmlFor="relatedQuestions">Related Questions</label>
+              </div>
+
+              <div>
+                <input
+                  onChange={checkboxChangeHandler}
+                  checked={checkbox.relatedCount || false}
+                  id="relatedCount"
+                  type="checkbox"
+                  name="relatedCount"
+                />
+                <label htmlFor="relatedCount">Related Count</label>
+              </div>
+
+              <div>
+                <input
+                  onChange={checkboxChangeHandler}
+                  checked={checkbox.Date || false}
+                  id="Date"
+                  type="checkbox"
+                  name="Date"
+                />
+                <label htmlFor="Date">Dates</label>
+              </div>
+            </div>
+            <button onClick={copyBtnHandler}>Copy Questions</button>
+            {/* <button onClick={copyWithRelatedButtonHandler}>
+              Copy with Related Questions
+            </button> */}
+          </div>
 
           <div>
+            <h4>Save Data:</h4>
             <button onClick={saveBtnHandler}>Save to local Storage</button>
             <button onClick={getSavedBtnHandler}>Get from local Storage</button>
             <button onClick={() => localStorage.clear() || alert("cleared")}>
