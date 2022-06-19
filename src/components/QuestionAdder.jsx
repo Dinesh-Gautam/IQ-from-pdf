@@ -84,7 +84,7 @@ function QuestionAdder() {
       <h4>Add Question</h4>
       <input
         ref={inputRef}
-        style={{ width: "100%" }}
+        style={{ width: "40%" }}
         type="text"
         value={questionInput}
         onChange={(e) => setQuestionInput(e.target.value)}

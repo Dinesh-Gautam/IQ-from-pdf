@@ -214,9 +214,9 @@ function QuestionInterface() {
   }, [pdfQuestions]);
   return (
     <div>
-      <div>
-        <h4> QuestionArea</h4>
+      <div className="question-area-container">
         <div className="question-container">
+          <h4> QuestionArea</h4>
           {questions &&
             questions.map((q, index) => {
               return (
@@ -273,101 +273,105 @@ function QuestionInterface() {
                 </div>
               );
             })}
-          <div>
-            <h4>Copy Data:</h4>
-            <div>
-              <h5>Additions: </h5>
+        </div>
+        <div className="right-container">
+          <div className="right-wrapper">
+            <QuestionAdder />
+            {selectedQuestion && !!selectedQuestion.related.length && (
               <div>
-                <input
-                  onChange={checkboxChangeHandler}
-                  checked={checkbox.importantQuestion || false}
-                  id="importantQuestion"
-                  type="checkbox"
-                  name="importantQuestion"
-                />
-                <label htmlFor="importantQuestion">Important Questions</label>
+                <h4>Related Questions: </h4>
+                <div className="related-question">
+                  {selectedQuestion.related.map((q, index) => {
+                    return (
+                      <div className={"question"} key={index}>
+                        <span className="questions-extras questions-extras-month">{`${q.month} ${q.year}`}</span>
+                        <span>{q.question}</span>
+                        <button
+                          onClick={() => {
+                            editDateHandler(selectedQuestion.id, q.id);
+                          }}
+                          style={{ marginLeft: "2rem" }}
+                        >
+                          Edit Date
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
+            )}
 
-              <div>
-                <input
-                  onChange={checkboxChangeHandler}
-                  checked={checkbox.relatedQuestions || false}
-                  id="relatedQuestions"
-                  type="checkbox"
-                  name="relatedQuestions"
-                />
-                <label htmlFor="relatedQuestions">Related Questions</label>
-              </div>
-
-              <div>
-                <input
-                  onChange={checkboxChangeHandler}
-                  checked={checkbox.relatedCount || false}
-                  id="relatedCount"
-                  type="checkbox"
-                  name="relatedCount"
-                />
-                <label htmlFor="relatedCount">Related Count</label>
-              </div>
-
-              <div>
-                <input
-                  onChange={checkboxChangeHandler}
-                  checked={checkbox.Date || false}
-                  id="Date"
-                  type="checkbox"
-                  name="Date"
-                />
-                <label htmlFor="Date">Dates</label>
-              </div>
-            </div>
-            <button onClick={copyBtnHandler}>Copy Questions</button>
-            {/* <button onClick={copyWithRelatedButtonHandler}>
-              Copy with Related Questions
-            </button> */}
-          </div>
-
-          <div>
-            <h4>Save Data:</h4>
-            <button onClick={saveBtnHandler}>Save to local Storage</button>
-            <button onClick={getSavedBtnHandler}>Get from local Storage</button>
-            <button onClick={() => localStorage.clear() || alert("cleared")}>
-              Clear Local Storage
-            </button>
+            {edit.editing && (
+              <EditDate
+                prevMonth={edit.obj.month}
+                prevYear={edit.obj.year}
+                editDateSubmitHandler={editDateSubmitHandler}
+              />
+            )}
           </div>
         </div>
-        {selectedQuestion && !!selectedQuestion.related.length && (
-          <div>
-            <h4>Related Questions: </h4>
-            <div>
-              {selectedQuestion.related.map((q, index) => {
-                return (
-                  <div className={"question"} key={index}>
-                    <span className="questions-extras questions-extras-month">{`${q.month} ${q.year}`}</span>
-                    <span>{q.question}</span>
-                    <button
-                      onClick={() => {
-                        editDateHandler(selectedQuestion.id, q.id);
-                      }}
-                      style={{ marginLeft: "2rem" }}
-                    >
-                      Edit Date
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
-      {edit.editing && (
-        <EditDate
-          prevMonth={edit.obj.month}
-          prevYear={edit.obj.year}
-          editDateSubmitHandler={editDateSubmitHandler}
-        />
-      )}
-      <QuestionAdder />
+      <div>
+        <h4>Copy Data:</h4>
+        <div>
+          <div>
+            <input
+              onChange={checkboxChangeHandler}
+              checked={checkbox.importantQuestion || false}
+              id="importantQuestion"
+              type="checkbox"
+              name="importantQuestion"
+            />
+            <label htmlFor="importantQuestion">Important Questions</label>
+          </div>
+
+          <div>
+            <input
+              onChange={checkboxChangeHandler}
+              checked={checkbox.relatedQuestions || false}
+              id="relatedQuestions"
+              type="checkbox"
+              name="relatedQuestions"
+            />
+            <label htmlFor="relatedQuestions">Related Questions</label>
+          </div>
+
+          <div>
+            <input
+              onChange={checkboxChangeHandler}
+              checked={checkbox.relatedCount || false}
+              id="relatedCount"
+              type="checkbox"
+              name="relatedCount"
+            />
+            <label htmlFor="relatedCount">Related Count</label>
+          </div>
+
+          <div>
+            <input
+              onChange={checkboxChangeHandler}
+              checked={checkbox.Date || false}
+              id="Date"
+              type="checkbox"
+              name="Date"
+            />
+            <label htmlFor="Date">Dates</label>
+          </div>
+        </div>
+        <button onClick={copyBtnHandler}>Copy Questions</button>
+        {/* <button onClick={copyWithRelatedButtonHandler}>
+              Copy with Related Questions
+            </button> */}
+      </div>
+      <div>
+        <h4>Save Data:</h4>
+        <button onClick={saveBtnHandler}>Save to local Storage</button>
+        <button onClick={getSavedBtnHandler}>Get from local Storage</button>
+        <button onClick={() => localStorage.clear() || alert("cleared")}>
+          Clear Local Storage
+        </button>
+      </div>
+
       {/* <TagMaker /> */}
       <WordsToIgnore />
     </div>
