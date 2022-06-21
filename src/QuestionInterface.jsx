@@ -211,6 +211,20 @@ function QuestionInterface() {
     setQuestions(newArr);
   };
 
+  const relatedDeleteHandler = (parentId, relatedId) => {
+    const newArr = questions.map((q) => {
+      if (q.id === parentId) {
+        return {
+          ...q,
+          related: q.related.filter((r) => r.id !== relatedId),
+        };
+      } else {
+        return q;
+      }
+    });
+    setQuestions(newArr);
+  };
+
   const checkboxChangeHandler = (event) => {
     const target = event.target;
     const { name, checked } = target;
@@ -395,54 +409,66 @@ function QuestionInterface() {
               <div>
                 <h4>Related Questions: </h4>
                 <div className="related-question">
-                  {selectedQuestion.map((sq, index) => {
-                    return sq.related.map((q, index) => {
-                      return (
-                        <div
-                          className={"question"}
-                          // className={
-                          //   "question " +
-                          //   (selectedRelatedQuestions.some(
-                          //     (sq) => sq.id === q.id
-                          //   )
-                          //     ? "selected"
-                          //     : "")
-                          // }
-                          // onClick={(e) => {
-                          //   console.log(selectedRelatedQuestions);
-                          //   if (!e.ctrlKey) {
-                          //     setSelectedRelatedQuestions([
-                          //       {
-                          //         parent: sq,
-                          //         related: q,
-                          //       },
-                          //     ]);
-                          //   } else {
-                          //     setSelectedRelatedQuestions((prev) => [
-                          //       ...prev,
-                          //       {
-                          //         parent: sq,
-                          //         related: q,
-                          //       },
-                          //     ]);
-                          //   }
-                          // }}
-                          key={index}
-                        >
-                          <span className="questions-extras questions-extras-month">{`${q.month} ${q.year}`}</span>
-                          <span>{q.question}</span>
-                          <button
-                            onClick={() => {
-                              editDateHandler(q.id);
-                            }}
-                            style={{ marginLeft: "2rem" }}
+                  {questions
+                    .filter((q) =>
+                      selectedQuestion.some((sq) => sq.id === q.id)
+                    )
+                    .map((sq, index) => {
+                      return sq.related.map((q, index) => {
+                        return (
+                          <div
+                            className={"question"}
+                            // className={
+                            //   "question " +
+                            //   (selectedRelatedQuestions.some(
+                            //     (sq) => sq.id === q.id
+                            //   )
+                            //     ? "selected"
+                            //     : "")
+                            // }
+                            // onClick={(e) => {
+                            //   console.log(selectedRelatedQuestions);
+                            //   if (!e.ctrlKey) {
+                            //     setSelectedRelatedQuestions([
+                            //       {
+                            //         parent: sq,
+                            //         related: q,
+                            //       },
+                            //     ]);
+                            //   } else {
+                            //     setSelectedRelatedQuestions((prev) => [
+                            //       ...prev,
+                            //       {
+                            //         parent: sq,
+                            //         related: q,
+                            //       },
+                            //     ]);
+                            //   }
+                            // }}
+                            key={index}
                           >
-                            Edit Date
-                          </button>
-                        </div>
-                      );
-                    });
-                  })}
+                            <span className="questions-extras questions-extras-month">{`${q.month} ${q.year}`}</span>
+                            <span>{q.question}</span>
+                            <button
+                              onClick={() => {
+                                editDateHandler(q.id);
+                              }}
+                              style={{ marginLeft: "2rem" }}
+                            >
+                              Edit Date
+                            </button>
+                            <button
+                              onClick={() => {
+                                relatedDeleteHandler(sq.id, q.id);
+                              }}
+                              style={{ marginLeft: "2rem" }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        );
+                      });
+                    })}
                 </div>
               </div>
             )}
