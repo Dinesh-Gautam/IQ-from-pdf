@@ -9,6 +9,12 @@ import EditDate from "./components/EditDate";
 import { NlpSentenceEncoderComponent } from "./Tensorflow/nlp";
 import SaveQuestions from "./components/SaveQuestions";
 
+const editInit = {
+  editing: false,
+  parentId: [],
+  relatedId: [],
+};
+
 function QuestionInterface() {
   useEffect(() => {
     // console.log(nlp);
@@ -16,9 +22,14 @@ function QuestionInterface() {
 
   // const [questions, setQuestions] = useState([]);
   const { questions, pdfQuestions, setQuestions } = useStateContext();
-  const [selectedQuestion, setSelectedQuestion] = useState("");
+  const [selectedQuestion, setSelectedQuestion] = useState([]);
   const [checkbox, setCheckbox] = useState({});
-  const [edit, setEdit] = useState({ editing: false });
+  const [selectedRelatedQuestions, setSelectedRelatedQuestions] = useState([]);
+  const [edit, setEdit] = useState({
+    editing: false,
+    parentId: [],
+    relatedId: [],
+  });
   const [sort, setSort] = useState({
     questionSort: "relatedCount",
     orderBy: "dsc",
@@ -142,19 +153,30 @@ function QuestionInterface() {
   //   navigator.clipboard.writeText(string);
   // };
 
-  const editDateHandler = (id, relatedId) => {
-    let obj = questions.find((q) => q.id === id);
-    if (relatedId) {
-      obj = obj.related.find((q) => q.id === relatedId);
-    }
-    setEdit({ editing: true, parentId: id, relatedId: relatedId || null, obj });
+  const editDateHandler = (relatedId) => {
+    selectedQuestion.forEach(({ id }) => {
+      let obj = questions.find((q) => q.id === id);
+      if (relatedId) {
+        obj = obj.related.find((q) => q.id === relatedId);
+      }
+      setEdit((prev) => ({
+        ...prev,
+        editing: true,
+        parentId: [...prev.parentId, id],
+        relatedId: relatedId || null,
+        obj,
+      }));
+    });
   };
 
   const editDateSubmitHandler = (obj) => {
     let newArr;
+
     if (edit.relatedId) {
       newArr = questions.map((q) => {
-        if (q.id === edit.parentId) {
+        console.log(edit.relatedId);
+        if (edit.parentId.some((pId) => pId === q.id)) {
+          console.log(q);
           return {
             ...q,
             related: q.related.map((relatedQ) =>
@@ -168,20 +190,24 @@ function QuestionInterface() {
         }
       });
     } else {
+      console.log(edit.parentId);
       newArr = questions.map((q) => {
-        if (q.id === edit.parentId) {
+        if (edit.parentId.some((p) => q.id === p)) {
           return { ...q, month: obj.month, year: obj.year };
         } else {
           return q;
         }
       });
     }
+
     setQuestions(newArr);
-    setEdit({ editing: false });
+    setEdit(editInit);
   };
 
-  const deleteHandler = (id) => {
-    const newArr = questions.filter((q) => q.id !== id);
+  const deleteHandler = () => {
+    const newArr = questions.filter(
+      (q) => !selectedQuestion.some((sid) => sid.id === q.id)
+    );
     setQuestions(newArr);
   };
 
@@ -261,7 +287,30 @@ function QuestionInterface() {
     <div>
       <div className="question-area-container">
         <div className="question-container">
+          {selectedQuestion.length > 0 && (
+            <div>
+              <button
+                onClick={() => {
+                  editDateHandler();
+                }}
+                style={{ marginLeft: "2rem" }}
+              >
+                Edit Date
+              </button>
+              <button
+                onClick={() => {
+                  // selectedQuestion.forEach((q) => {
+                  deleteHandler();
+                  // });
+                }}
+                style={{ marginLeft: "2rem" }}
+              >
+                Delete
+              </button>
+            </div>
+          )}
           <h4> QuestionArea</h4>
+
           {questions.length > 0 && (
             <>
               <div>
@@ -294,14 +343,23 @@ function QuestionInterface() {
               </div>
             </>
           )}
+
           {questions &&
             questions.map((q, index) => {
               return (
                 <div
-                  onClick={(e) => setSelectedQuestion(q)}
+                  onClick={(e) => {
+                    if (e.ctrlKey) {
+                      setSelectedQuestion((prev) => [...prev, q]);
+                    } else {
+                      setSelectedQuestion([q]);
+                    }
+                  }}
                   className={
                     "question " +
-                    (selectedQuestion.id === q.id ? "selected" : "")
+                    (selectedQuestion.some((sq) => sq.id === q.id)
+                      ? "selected"
+                      : "")
                   }
                   key={index}
                 >
@@ -325,27 +383,6 @@ function QuestionInterface() {
                   <div>
                     <span>{`${index + 1}. `}</span>
                     <span>{q.question}</span>
-                    {selectedQuestion.id === q.id && (
-                      <button
-                        onClick={() => {
-                          editDateHandler(q.id);
-                        }}
-                        style={{ marginLeft: "2rem" }}
-                      >
-                        Edit Date
-                      </button>
-                    )}
-
-                    {selectedQuestion.id === q.id && (
-                      <button
-                        onClick={() => {
-                          deleteHandler(q.id);
-                        }}
-                        style={{ marginLeft: "2rem" }}
-                      >
-                        Delete
-                      </button>
-                    )}
                   </div>
                 </div>
               );
@@ -354,30 +391,61 @@ function QuestionInterface() {
         <div className="right-container">
           <div className="right-wrapper">
             <QuestionAdder />
-            {selectedQuestion && !!selectedQuestion.related.length && (
+            {selectedQuestion && !!selectedQuestion.length && (
               <div>
                 <h4>Related Questions: </h4>
                 <div className="related-question">
-                  {selectedQuestion.related.map((q, index) => {
-                    return (
-                      <div className={"question"} key={index}>
-                        <span className="questions-extras questions-extras-month">{`${q.month} ${q.year}`}</span>
-                        <span>{q.question}</span>
-                        <button
-                          onClick={() => {
-                            editDateHandler(selectedQuestion.id, q.id);
-                          }}
-                          style={{ marginLeft: "2rem" }}
+                  {selectedQuestion.map((sq, index) => {
+                    return sq.related.map((q, index) => {
+                      return (
+                        <div
+                          className={"question"}
+                          // className={
+                          //   "question " +
+                          //   (selectedRelatedQuestions.some(
+                          //     (sq) => sq.id === q.id
+                          //   )
+                          //     ? "selected"
+                          //     : "")
+                          // }
+                          // onClick={(e) => {
+                          //   console.log(selectedRelatedQuestions);
+                          //   if (!e.ctrlKey) {
+                          //     setSelectedRelatedQuestions([
+                          //       {
+                          //         parent: sq,
+                          //         related: q,
+                          //       },
+                          //     ]);
+                          //   } else {
+                          //     setSelectedRelatedQuestions((prev) => [
+                          //       ...prev,
+                          //       {
+                          //         parent: sq,
+                          //         related: q,
+                          //       },
+                          //     ]);
+                          //   }
+                          // }}
+                          key={index}
                         >
-                          Edit Date
-                        </button>
-                      </div>
-                    );
+                          <span className="questions-extras questions-extras-month">{`${q.month} ${q.year}`}</span>
+                          <span>{q.question}</span>
+                          <button
+                            onClick={() => {
+                              editDateHandler(q.id);
+                            }}
+                            style={{ marginLeft: "2rem" }}
+                          >
+                            Edit Date
+                          </button>
+                        </div>
+                      );
+                    });
                   })}
                 </div>
               </div>
             )}
-
             {edit.editing && (
               <EditDate
                 prevMonth={edit.obj.month}
