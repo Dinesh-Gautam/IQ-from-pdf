@@ -28,8 +28,60 @@ function QuestionAdder() {
     setMonthInput((prev) => ({ ...prev, [name]: value }));
   }
   const { wordsToIgnore } = useStateContext();
-  function questionAdderHandler() {
-    const relatedId = questions.filter(({ question }) => {
+  // function questionAdderHandler() {
+  //   const relatedId = questions.filter(({ question }) => {
+  //     const formattedInput = questionInput
+  //       .toLowerCase()
+  //       .split(" ")
+  //       .filter((word) => !wordsToIgnore.some((w) => w === word))
+  //       .join(" ");
+  //     const formattedQuestion = question
+  //       .toLowerCase()
+  //       .split(" ")
+  //       .filter((word) => !wordsToIgnore.some((w) => w === word))
+  //       .join(" ");
+  //     const result = stringSimilarity.compareTwoStrings(
+  //       formattedInput,
+  //       formattedQuestion
+  //     );
+
+  //     console.table({
+  //       formattedInputQuestion: formattedInput,
+  //       formattedQuestion: formattedQuestion,
+  //       result: result,
+  //     });
+
+  //     if (result > 0.7) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   });
+
+  //   if (relatedId.length > 0) {
+  //     const newArr = questions.map((e) => {
+  //       const related = relatedId.find((arr) => arr.id === e.id);
+  //       if (related) {
+  //         return {
+  //           ...e,
+  //           related: [...e.related, QuestionObj],
+  //         };
+  //       } else {
+  //         return e;
+  //       }
+  //     });
+
+  //     setQuestions(newArr);
+  //   } else {
+  //     setQuestions((prev) => [...prev, { ...QuestionObj, related: [] }]);
+  //   }
+  //   setQuestionInput("");
+  //   inputRef.current.focus();
+  // }
+
+  function questionAdderHandler(e) {
+    e.preventDefault();
+    const relatedId = questions.questions.filter(({ question }) => {
       const formattedInput = questionInput
         .toLowerCase()
         .split(" ")
@@ -59,26 +111,23 @@ function QuestionAdder() {
     });
 
     if (relatedId.length > 0) {
-      const newArr = questions.map((e) => {
-        const related = relatedId.find((arr) => arr.id === e.id);
-        if (related) {
-          return {
-            ...e,
-            related: [...e.related, QuestionObj],
-          };
-        } else {
-          return e;
-        }
-      });
-
-      setQuestions(newArr);
+      console.log(relatedId);
+      setQuestions((prev) => ({
+        ...prev,
+        related: [
+          ...prev.related,
+          ...relatedId.map(({ id }) => ({ ...QuestionObj, parentId: id })),
+        ],
+      }));
     } else {
-      setQuestions((prev) => [...prev, { ...QuestionObj, related: [] }]);
+      setQuestions((prev) => ({
+        ...prev,
+        questions: [...prev.questions, { ...QuestionObj }],
+      }));
     }
-    setQuestionInput("");
+    // setQuestionInput("");
     inputRef.current.focus();
   }
-
   return (
     <form>
       <h4>Add Question</h4>

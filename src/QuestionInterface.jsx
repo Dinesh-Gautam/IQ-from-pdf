@@ -45,22 +45,30 @@ function QuestionInterface() {
     console.log("sorting by related count in : " + orderBy);
     let newArr;
     if (orderBy === "dsc") {
-      newArr = questions.sort((a, b) => b.related.length - a.related.length);
+      newArr = questions.questions.sort(
+        (a, b) => getRelated(b.id).length - getRelated(a.id).length
+      );
     } else {
-      newArr = questions.sort((a, b) => a.related.length - b.related.length);
+      newArr = questions.questions.sort(
+        (a, b) => getRelated(a.id).length - getRelated(b.id).length
+      );
     }
-    setQuestions([...newArr]);
+    setQuestions((prev) => ({ ...prev, questions: [...newArr] }));
   };
 
   const sortByDateYear = (orderBy) => {
     console.log("sorting by date in : " + orderBy);
     let newArr;
     if (orderBy === "dsc") {
-      newArr = questions.sort((a, b) => parseInt(b.year) - parseInt(a.year));
+      newArr = questions.questions.sort(
+        (a, b) => parseInt(b.year) - parseInt(a.year)
+      );
     } else {
-      newArr = questions.sort((a, b) => parseInt(a.year) - parseInt(b.year));
+      newArr = questions.questions.sort(
+        (a, b) => parseInt(a.year) - parseInt(b.year)
+      );
     }
-    setQuestions([...newArr]);
+    setQuestions((prev) => ({ ...prev, questions: [...newArr] }));
   };
 
   const sortBtnHandler = () => {
@@ -81,7 +89,8 @@ function QuestionInterface() {
   const copyBtnHandler = () => {
     let string = "";
 
-    questions.forEach(({ question, related, month, year }, index) => {
+    questions.forEach(({ question, month, year, id }, index) => {
+      let related = questions.related.filter((r) => r.id === id);
       if (checkbox.importantQuestion) {
         string +=
           related.length > 0
@@ -134,6 +143,7 @@ function QuestionInterface() {
 
     console.log(string);
     navigator.clipboard.writeText(string);
+    alert("Copied text!");
   };
 
   // const copyWithRelatedButtonHandler = () => {
@@ -155,9 +165,9 @@ function QuestionInterface() {
 
   const editDateHandler = (relatedId) => {
     selectedQuestion.forEach(({ id }) => {
-      let obj = questions.find((q) => q.id === id);
+      let obj = questions.questions.find((q) => q.id === id);
       if (relatedId) {
-        obj = obj.related.find((q) => q.id === relatedId);
+        obj = questions.related.find((q) => q.id === relatedId);
       }
       setEdit((prev) => ({
         ...prev,
@@ -179,7 +189,7 @@ function QuestionInterface() {
           console.log(q);
           return {
             ...q,
-            related: q.related.map((relatedQ) =>
+            related: questions.related.map((relatedQ) =>
               relatedQ.id === edit.relatedId
                 ? { ...relatedQ, month: obj.month, year: obj.year }
                 : relatedQ
@@ -189,26 +199,27 @@ function QuestionInterface() {
           return q;
         }
       });
+      setQuestions((prev) => ({ ...prev, related: newArr }));
     } else {
       console.log(edit.parentId);
-      newArr = questions.map((q) => {
+      newArr = questions.questions.map((q) => {
         if (edit.parentId.some((p) => q.id === p)) {
           return { ...q, month: obj.month, year: obj.year };
         } else {
           return q;
         }
       });
+      setQuestions((prev) => ({ ...prev, questions: newArr }));
     }
 
-    setQuestions(newArr);
     setEdit(editInit);
   };
 
   const deleteHandler = () => {
-    const newArr = questions.filter(
+    const newArr = questions.questions.filter(
       (q) => !selectedQuestion.some((sid) => sid.id === q.id)
     );
-    setQuestions(newArr);
+    setQuestions((prev) => ({ ...prev, questions: newArr }));
   };
 
   const relatedDeleteHandler = (parentId, relatedId) => {
@@ -216,7 +227,7 @@ function QuestionInterface() {
       if (q.id === parentId) {
         return {
           ...q,
-          related: q.related.filter((r) => r.id !== relatedId),
+          related: questions.related.filter((r) => r.id !== relatedId),
         };
       } else {
         return q;
@@ -237,6 +248,10 @@ function QuestionInterface() {
   }, [questions]);
 
   let cacheQuestion = useRef([]);
+
+  function getRelated(parentId) {
+    return questions.related.filter((e) => e.parentId === parentId);
+  }
 
   useEffect(() => {
     if (!questions.length && pdfQuestions && !pdfQuestions.length) return;
@@ -325,7 +340,7 @@ function QuestionInterface() {
           )}
           <h4> QuestionArea</h4>
 
-          {questions.length > 0 && (
+          {questions.questions.length > 0 && (
             <>
               <div>
                 <span>Sort:</span>
@@ -358,8 +373,8 @@ function QuestionInterface() {
             </>
           )}
 
-          {questions &&
-            questions.map((q, index) => {
+          {questions.questions &&
+            questions.questions.map((q, index) => {
               return (
                 <div
                   onClick={(e) => {
@@ -379,15 +394,15 @@ function QuestionInterface() {
                 >
                   <div className="questions-extras-container">
                     <span className="questions-extras questions-extras-month">{`${q.month} ${q.year}`}</span>
-                    {q.related.length ? (
+                    {getRelated(q.id).length ? (
                       <span className="questions-extras">
-                        {q.related.length}
+                        {getRelated(q.id).length}
                       </span>
                     ) : (
                       ""
                     )}
 
-                    {q.related.map(({ id, month, year }) => (
+                    {getRelated(q.id).map(({ id, month, year }) => (
                       <span
                         key={id}
                         className="questions-extras"
@@ -409,12 +424,12 @@ function QuestionInterface() {
               <div>
                 <h4>Related Questions: </h4>
                 <div className="related-question">
-                  {questions
+                  {questions.questions
                     .filter((q) =>
                       selectedQuestion.some((sq) => sq.id === q.id)
                     )
                     .map((sq, index) => {
-                      return sq.related.map((q, index) => {
+                      return getRelated(sq.id).map((q, index) => {
                         return (
                           <div
                             className={"question"}
