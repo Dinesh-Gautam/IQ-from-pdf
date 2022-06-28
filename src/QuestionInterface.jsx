@@ -21,6 +21,7 @@ function QuestionInterface() {
   }, []);
 
   // const [questions, setQuestions] = useState([]);
+  const [undo , setUndo] = useState([])
   const { questions, pdfQuestions, setQuestions } = useStateContext();
   const [selectedQuestion, setSelectedQuestion] = useState([]);
   const [checkbox, setCheckbox] = useState({});
@@ -34,6 +35,8 @@ function QuestionInterface() {
     questionSort: "relatedCount",
     orderBy: "dsc",
   });
+
+
 
   const sortSelectChange = (e) => {
     const { name, value } = e.target;
@@ -89,8 +92,8 @@ function QuestionInterface() {
   const copyBtnHandler = () => {
     let string = "";
 
-    questions.forEach(({ question, month, year, id }, index) => {
-      let related = questions.related.filter((r) => r.id === id);
+    questions.questions.forEach(({ question, month, year, id }, index) => {
+      let related = getRelated(id);
       if (checkbox.importantQuestion) {
         string +=
           related.length > 0
@@ -98,7 +101,7 @@ function QuestionInterface() {
                 related.length && (checkbox.relatedCount || checkbox.Date)
                   ? `(${checkbox.relatedCount ? related.length + 1 : ""} ${
                       checkbox.Date
-                        ? `[${month} ${year}],` +
+                        ? `[${month} ${year}] ` +
                           related.map((e) => `[${e.month} ${e.year}]`)
                         : ""
                     }) : `
@@ -118,11 +121,11 @@ function QuestionInterface() {
             : "";
       } else {
         string += `${
-          related.length && (checkbox.relatedCount || checkbox.Date)
-            ? `(${checkbox.relatedCount ? related.length + 1 : ""} ${
+          (checkbox.relatedCount || checkbox.Date)
+            ? `(${checkbox.relatedCount & related.length ? related.length + 1 : ""} ${
                 checkbox.Date
-                  ? `[${month} ${year}],` +
-                    related.map((e) => `[${e.month} ${e.year}]`)
+                  ? `[${month} ${year}] ` + 
+                    related.map((e) => `[${e.month} ${e.year}]`).join(' ')
                   : ""
               }) : `
             : ""
@@ -146,23 +149,6 @@ function QuestionInterface() {
     alert("Copied text!");
   };
 
-  // const copyWithRelatedButtonHandler = () => {
-  //   let string = "";
-
-  //   questions.forEach(({ question, related }, index) => {
-  //     string += `${
-  //       related.length
-  //         ? `(${related.length + 1} ${related.map(
-  //             (e) => `[${e.month} ${e.year}]`
-  //           )})`
-  //         : ""
-  //     } ${question}\n\t`;
-  //   });
-
-  //   console.log(string);
-  //   navigator.clipboard.writeText(string);
-  // };
-
   const editDateHandler = (relatedId) => {
     selectedQuestion.forEach(({ id }) => {
       let obj = questions.questions.find((q) => q.id === id);
@@ -183,22 +169,14 @@ function QuestionInterface() {
     let newArr;
 
     if (edit.relatedId) {
-      newArr = questions.map((q) => {
-        console.log(edit.relatedId);
-        if (edit.parentId.some((pId) => pId === q.id)) {
-          console.log(q);
-          return {
-            ...q,
-            related: questions.related.map((relatedQ) =>
-              relatedQ.id === edit.relatedId
-                ? { ...relatedQ, month: obj.month, year: obj.year }
-                : relatedQ
-            ),
-          };
-        } else {
-          return q;
+      newArr =  questions.related.map((r) => {
+        if(r.id === edit.relatedId) {
+          return {...r , month : obj.month , year : obj.year}
+        }else {
+          return r
         }
-      });
+      })
+   
       setQuestions((prev) => ({ ...prev, related: newArr }));
     } else {
       console.log(edit.parentId);
@@ -216,24 +194,26 @@ function QuestionInterface() {
   };
 
   const deleteHandler = () => {
+    setUndo(prev => [...prev , questions])
     const newArr = questions.questions.filter(
       (q) => !selectedQuestion.some((sid) => sid.id === q.id)
     );
     setQuestions((prev) => ({ ...prev, questions: newArr }));
+    setSelectedQuestion([])
   };
 
+  const undoDeleteBtnHandler = () => {
+    console.log("Undo")
+    const newArr = undo[undo.length - 1];
+    setUndo(prev => undo.splice(undo.length - 1 , 1) )
+    setQuestions(newArr)
+  }
+
   const relatedDeleteHandler = (parentId, relatedId) => {
-    const newArr = questions.map((q) => {
-      if (q.id === parentId) {
-        return {
-          ...q,
-          related: questions.related.filter((r) => r.id !== relatedId),
-        };
-      } else {
-        return q;
-      }
-    });
-    setQuestions(newArr);
+    // deletedQuestions = questions
+    const newArr =  questions.related.filter((r) => r.id !== relatedId)
+       
+    setQuestions(prev => ({...prev , related : newArr}));
   };
 
   const checkboxChangeHandler = (event) => {
@@ -316,30 +296,15 @@ function QuestionInterface() {
     <div>
       <div className="question-area-container">
         <div className="question-container">
-          {selectedQuestion.length > 0 && (
-            <div>
-              <button
-                onClick={() => {
-                  editDateHandler();
-                }}
-                style={{ marginLeft: "2rem" }}
-              >
-                Edit Date
-              </button>
-              <button
-                onClick={() => {
-                  // selectedQuestion.forEach((q) => {
-                  deleteHandler();
-                  // });
-                }}
-                style={{ marginLeft: "2rem" }}
-              >
-                Delete
-              </button>
-            </div>
-          )}
+ {           undo.length > 0 && 
+          <div>
+            <button onClick={undoDeleteBtnHandler}>
+              Undo Delete
+            </button>
+          </div>
+          }
           <h4> QuestionArea</h4>
-
+          
           {questions.questions.length > 0 && (
             <>
               <div>
@@ -372,7 +337,26 @@ function QuestionInterface() {
               </div>
             </>
           )}
-
+{selectedQuestion.length > 0 && (
+            <div>
+              <button
+                onClick={() => {
+                  editDateHandler();
+                }}
+                style={{ marginLeft: "2rem" }}
+              >
+                Edit Date
+              </button>
+              <button
+                onClick={() => {
+                  deleteHandler();
+                }}
+                style={{ marginLeft: "2rem" }}
+              >
+                Delete
+              </button>
+            </div>
+          )}
           {questions.questions &&
             questions.questions.map((q, index) => {
               return (
