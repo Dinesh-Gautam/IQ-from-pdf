@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useStateContext } from "../context/stateContext";
 import stringSimilarity from "string-similarity";
 import { v4 as uuid } from "uuid";
@@ -6,7 +6,7 @@ import { v4 as uuid } from "uuid";
 function QuestionAdder() {
   const inputRef = useRef();
 
-  const { questions, setQuestions } = useStateContext();
+  const { questions, setQuestions , pdfQuestions } = useStateContext();
 
   const [questionInput, setQuestionInput] = useState("");
 
@@ -15,12 +15,6 @@ function QuestionAdder() {
     year: "22",
   });
 
-  const QuestionObj = {
-    question: questionInput,
-    id: uuid(),
-    month: monthInput.month,
-    year: monthInput.year,
-  };
 
   function monthInputHandler(event) {
     const name = event.target.name;
@@ -79,8 +73,21 @@ function QuestionAdder() {
   //   inputRef.current.focus();
   // }
 
-  function questionAdderHandler(e) {
-    e.preventDefault();
+
+  useEffect(() => {
+    const qI = pdfQuestions.flat().join("\n");
+    setQuestionInput(qI)
+  }, [pdfQuestions]);
+
+  function questionAdderHandler(questionInput) {
+    
+  const QuestionObj = {
+    question: questionInput,
+    id: uuid(),
+    month: monthInput.month,
+    year: monthInput.year,
+  };
+  console.log(questionInput)
     const relatedId = questions.questions.filter(({ question }) => {
       const formattedInput = questionInput
         .toLowerCase()
@@ -97,11 +104,11 @@ function QuestionAdder() {
         formattedQuestion
       );
 
-      console.table({
-        formattedInputQuestion: formattedInput,
-        formattedQuestion: formattedQuestion,
-        result: result,
-      });
+      // console.table({
+      //   formattedInputQuestion: formattedInput,
+      //   formattedQuestion: formattedQuestion,
+      //   result: result,
+      // });
 
       if (result > 0.7) {
         return true;
@@ -111,7 +118,6 @@ function QuestionAdder() {
     });
 
     if (relatedId.length > 0) {
-      console.log(relatedId);
       setQuestions((prev) => ({
         ...prev,
         related: [
@@ -131,7 +137,7 @@ function QuestionAdder() {
   return (
     <form>
       <h4>Add Question</h4>
-      <input
+      <textarea
         ref={inputRef}
         style={{ width: "40%" }}
         type="text"
@@ -139,9 +145,9 @@ function QuestionAdder() {
         onChange={(e) => setQuestionInput(e.target.value)}
         name="question input"
         id="question_input"
-        cols="30"
-        rows="10"
-      />
+        cols="20"
+        rows="5"
+      ></textarea>
       {/* <div>
       <input
         value={monthInput}
@@ -195,7 +201,16 @@ function QuestionAdder() {
         <button
           type="submit"
           disabled={!questionInput}
-          onClick={questionAdderHandler}
+          onClick={(e) => {
+            e.preventDefault();
+            const qI = questionInput.split("\n");
+
+            qI.forEach(question => {
+              if(question.trim().length > 0) {
+                questionAdderHandler(question)
+              }
+            })
+          }}
         >
           Add Question
         </button>

@@ -263,65 +263,6 @@ function QuestionInterface() {
     return questions.related.filter((e) => e.parentId === parentId);
   }
 
-  useEffect(() => {
-    if (!questions.length && pdfQuestions && !pdfQuestions.length) return;
-    // console.log(pdfQuestions);
-
-    // const nlp = new NlpSentenceEncoderComponent();
-    // nlp.Init(pdfQuestions);
-
-    // return;
-
-    pdfQuestions.forEach((pdfPage) => {
-      pdfPage.forEach((questionInput) => {
-        let tempQuestions = cacheQuestion.current;
-        const QuestionObj = {
-          question: questionInput,
-          id: uuid(),
-          month: "Temp",
-          year: "Temp",
-        };
-        console.log(tempQuestions);
-        const relatedId = tempQuestions.filter(({ question }) => {
-          const result = stringSimilarity.compareTwoStrings(
-            questionInput,
-            question
-          );
-          // console.log(questionInput, question);
-
-          if (result > 0.7) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        if (relatedId.length > 0) {
-          const newArr = tempQuestions.map((e) => {
-            const related = relatedId.find((arr) => arr.id === e.id);
-            if (related) {
-              return {
-                ...e,
-                related: [...e.related, QuestionObj],
-              };
-            } else {
-              return e;
-            }
-          });
-
-          cacheQuestion.current = newArr;
-          // setQuestions(newArr);
-        } else {
-          cacheQuestion.current = [
-            ...tempQuestions,
-            { ...QuestionObj, related: [] },
-          ];
-          // setQuestions((prev) => [...prev, { ...QuestionObj, related: [] }]);
-        }
-      });
-    });
-
-    setQuestions(cacheQuestion.current);
-  }, [pdfQuestions]);
   return (
     <div>
       <div className="question-area-container">
