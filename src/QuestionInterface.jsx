@@ -243,6 +243,15 @@ function QuestionInterface() {
       related : [...mrq, ...rq , ]
     }))
   }
+    const unGroupRelatedHandler =(id) => {
+    const rq = questions.related.find(q => q.id=== id)
+
+    setQuestions(prev => ({
+      questions : [...prev.questions , rq],
+      related : prev.related.filter(q => q.id !== id)
+    }))
+  
+  }
 
   useEffect(() => {
     // console.log(questions);
@@ -487,6 +496,9 @@ function QuestionInterface() {
                               style={{ marginLeft: "2rem" }}
                             >
                               Delete
+                            </button>
+                            <button onClick={() => unGroupRelatedHandler(q.id)}>
+                            UnGroup
                             </button>
                           </div>
                         );
