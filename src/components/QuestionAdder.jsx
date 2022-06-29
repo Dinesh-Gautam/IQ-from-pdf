@@ -125,7 +125,7 @@ function QuestionAdder() {
         questions: [...prev.questions, { ...QuestionObj }],
       }));
     }
-    // setQuestionInput("");
+    setQuestionInput("");
     inputRef.current.focus();
   }
   return (

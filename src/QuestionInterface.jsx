@@ -223,6 +223,27 @@ function QuestionInterface() {
     setCheckbox((prev) => ({ ...prev, [name]: checked }));
   };
 
+  const groupBtnHandler =() => {
+    const pq = selectedQuestion[0]
+    const rq = selectedQuestion.splice(1 , selectedQuestion.length -1 ).map(q => ({...q , parentId : pq.id}));
+    // const mrq = rq.map(q => getRelated(q.id)).flat();
+    const mrq = questions.related.map((q)=> {
+      if(rq.some(({id}) => q.parentId=== id)){
+        return {
+          ...q , parentId : pq.id
+        }
+      }else {
+        return q
+      }
+    })
+
+    console.log(mrq)
+    setQuestions(prev => ({
+      questions : prev.questions.filter(({id}) => !rq.some(q => q.id === id)),
+      related : [...mrq, ...rq , ]
+    }))
+  }
+
   useEffect(() => {
     // console.log(questions);
   }, [questions]);
@@ -354,6 +375,9 @@ function QuestionInterface() {
                 style={{ marginLeft: "2rem" }}
               >
                 Delete
+              </button>
+              <button onClick={groupBtnHandler}>
+                Group
               </button>
             </div>
           )}
