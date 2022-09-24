@@ -1,12 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
+
 import { useStateContext } from "../context/stateContext";
 import stringSimilarity from "string-similarity";
 import { v4 as uuid } from "uuid";
+import {
+  Box,
+  Button,
+  FormLabel,
+  Option,
+  Select,
+  selectClasses,
+  Textarea,
+} from "@mui/joy";
+
+import FormControl from "@mui/joy/FormControl";
 
 function QuestionAdder() {
   const inputRef = useRef();
 
-  const { questions, setQuestions , pdfQuestions } = useStateContext();
+  const { questions, setQuestions, pdfQuestions } = useStateContext();
 
   const [questionInput, setQuestionInput] = useState("");
 
@@ -15,10 +27,8 @@ function QuestionAdder() {
     year: "22",
   });
 
-
-  function monthInputHandler(event) {
-    const name = event.target.name;
-    const value = event.target.value;
+  function monthInputHandler(event, newValue, name) {
+    const value = newValue;
     setMonthInput((prev) => ({ ...prev, [name]: value }));
   }
   const { wordsToIgnore } = useStateContext();
@@ -73,21 +83,19 @@ function QuestionAdder() {
   //   inputRef.current.focus();
   // }
 
-
   useEffect(() => {
     const qI = pdfQuestions.flat().join("\n");
-    setQuestionInput(qI)
+    setQuestionInput(qI);
   }, [pdfQuestions]);
 
   function questionAdderHandler(questionInput) {
-    
-  const QuestionObj = {
-    question: questionInput,
-    id: uuid(),
-    month: monthInput.month,
-    year: monthInput.year,
-  };
-  console.log(questionInput)
+    const QuestionObj = {
+      question: questionInput,
+      id: uuid(),
+      month: monthInput.month,
+      year: monthInput.year,
+    };
+    console.log(questionInput);
     const relatedId = questions.questions.filter(({ question }) => {
       const formattedInput = questionInput
         .toLowerCase()
@@ -135,87 +143,216 @@ function QuestionAdder() {
     inputRef.current.focus();
   }
   return (
-    <form>
-      <h4>Add Question</h4>
-      <textarea
-        ref={inputRef}
-        style={{ width: "40%" }}
-        type="text"
-        value={questionInput}
-        onChange={(e) => setQuestionInput(e.target.value)}
-        name="question input"
-        id="question_input"
-        cols="20"
-        rows="5"
-      ></textarea>
-      {/* <div>
-      <input
-        value={monthInput}
-        onChange={(e) => monthInputHandler(e.target.value)}
-        type="month"
-      />
-    </div> */}
-      <div>
-        <span>
-          <label htmlFor="month">Month:</label>
-          <select
-            value={monthInput.month}
-            onChange={monthInputHandler}
-            id="month"
-            name="month"
-          >
-            <option>Jan</option>
-            <option>Feb</option>
-            <option>Mar</option>
-            <option>Apr</option>
-            <option>May</option>
-            <option>Jun</option>
-            <option>Jul</option>
-            <option>Aug</option>
-            <option>Sep</option>
-            <option>Oct</option>
-            <option>Nov</option>
-            <option>Dec</option>
-          </select>
-        </span>
-        <span>
-          <label htmlFor="year">Year:</label>
-          <select
-            value={monthInput.year}
-            onChange={monthInputHandler}
-            id="year"
-            name="year"
-          >
-            <option>22</option>
-            <option>21</option>
-            <option>20</option>
-            <option>19</option>
-            <option>18</option>
-            <option>17</option>
-            <option>16</option>
-            <option>15</option>
-          </select>
-        </span>
-      </div>
-      <div>
-        <button
-          type="submit"
-          disabled={!questionInput}
-          onClick={(e) => {
-            e.preventDefault();
-            const qI = questionInput.split("\n");
+    // <form>
+    //   <h4>Add Question</h4>
+    //   <textarea
+    //     ref={inputRef}
+    //     style={{ width: "40%" }}
+    //     type="text"
+    //     value={questionInput}
+    //     onChange={(e) => setQuestionInput(e.target.value)}
+    //     name="question input"
+    //     id="question_input"
+    //     cols="20"
+    //     rows="5"
+    //   ></textarea>
+    //   {/* <div>
+    //   <input
+    //     value={monthInput}
+    //     onChange={(e) => monthInputHandler(e.target.value)}
+    //     type="month"
+    //   />
+    // </div> */}
+    //   <div>
+    //     <span>
+    //       <label htmlFor="month">Month:</label>
+    //       <select
+    //         value={monthInput.month}
+    //         onChange={monthInputHandler}
+    //         id="month"
+    //         name="month"
+    //       >
+    //         <Option>Jan</Option>
+    //         <Option>Feb</Option>
+    //         <Option>Mar</Option>
+    //         <Option>Apr</Option>
+    //         <Option>May</Option>
+    //         <Option>Jun</Option>
+    //         <Option>Jul</Option>
+    //         <Option>Aug</Option>
+    //         <Option>Sep</Option>
+    //         <Option>Oct</Option>
+    //         <Option>Nov</Option>
+    //         <Option>Dec</Option>
+    //       </select>
+    //     </span>
+    //     <span>
+    //       <label htmlFor="year">Year:</label>
+    //       <select
+    //         value={monthInput.year}
+    //         onChange={monthInputHandler}
+    //         id="year"
+    //         name="year"
+    //       >
+    //         <Option>22</Option>
+    //         <Option>21</Option>
+    //         <Option>20</Option>
+    //         <Option>19</Option>
+    //         <Option>18</Option>
+    //         <Option>17</Option>
+    //         <Option>16</Option>
+    //         <Option>15</Option>
+    //       </select>
+    //     </span>
+    //   </div>
+    //   <div>
+    //     <Box>
+    //       <Button
+    //         // variant="solid"
+    //         // color="primary"
+    //         // type="submit"
+    //         disabled={!questionInput}
+    //         // onClick={(e) => {
+    //         //   e.preventDefault();
+    //         //   const qI = questionInput.split("\n");
 
-            qI.forEach(question => {
-              if(question.trim().length > 0) {
-                questionAdderHandler(question)
-              }
-            })
-          }}
-        >
-          Add Question
-        </button>
-      </div>
-    </form>
+    //         //   qI.forEach((question) => {
+    //         //     if (question.trim().length > 0) {
+    //         //       questionAdderHandler(question);
+    //         //     }
+    //         //   });
+    //         // }}
+    //       >
+    //         Add Question
+    //       </Button>
+    //     </Box>
+    //   </div>
+    // </form>
+    <>
+      <FormControl
+        sx={{
+          width: "100%",
+        }}
+      >
+        <FormLabel>Add Question</FormLabel>
+        <Textarea
+          placeholder="Type here…"
+          ref={inputRef}
+          size="lg"
+          type="text"
+          value={questionInput}
+          onChange={(e) => setQuestionInput(e.target.value)}
+          name="question input"
+          id="question_input"
+          minRows={10}
+          endDecorator={
+            <Box
+              sx={{
+                display: "flex",
+                gap: "var(--Textarea-paddingBlock)",
+                pt: "var(--Textarea-paddingBlock)",
+                borderTop: "1px solid",
+                borderColor: "divider",
+                flex: "auto",
+                alignItems: "center",
+              }}
+            >
+              <FormControl>
+                <FormLabel>Month:</FormLabel>
+                <Select
+                  componentsProps={{
+                    listbox: {
+                      sx: {
+                        maxHeight: 200,
+                        overflow: "auto", // required for scrolling
+                      },
+                    },
+                  }}
+                  placeholder="Month"
+                  defaultValue={monthInput.month}
+                  value={monthInput.month}
+                  onChange={(e, n) => monthInputHandler(e, n, "month")}
+                  name="month"
+                  sx={{
+                    width: 120,
+                    [`& .${selectClasses.indicator}`]: {
+                      transition: "0.2s",
+                      [`&.${selectClasses.expanded}`]: {
+                        transform: "rotate(-180deg)",
+                      },
+                    },
+                  }}
+                >
+                  <Option value="Jan">Jan</Option>
+                  <Option value="Feb">Feb</Option>
+                  <Option value="Mar">Mar</Option>
+                  <Option value="Apr">Apr</Option>
+                  <Option value="May">May</Option>
+                  <Option value="Jun">Jun</Option>
+                  <Option value="Jul">Jul</Option>
+                  <Option value="Aug">Aug</Option>
+                  <Option value="Sep">Sep</Option>
+                  <Option value="Oct">Oct</Option>
+                  <Option value="Nov">Nov</Option>
+                  <Option value="Dec">Dec</Option>
+                </Select>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Year:</FormLabel>
+                <Select
+                  componentsProps={{
+                    listbox: {
+                      sx: {
+                        maxHeight: 200,
+                        overflow: "auto", // required for scrolling
+                      },
+                    },
+                  }}
+                  sx={{
+                    width: 120,
+                    [`& .${selectClasses.indicator}`]: {
+                      transition: "0.2s",
+                      [`&.${selectClasses.expanded}`]: {
+                        transform: "rotate(-180deg)",
+                      },
+                    },
+                  }}
+                  name="year"
+                  value={monthInput.year}
+                  onChange={(e, n) => monthInputHandler(e, n, "year")}
+                >
+                  <Option value="22">22</Option>
+                  <Option value="21">21</Option>
+                  <Option value="20">20</Option>
+                  <Option value="19">19</Option>
+                  <Option value="18">18</Option>
+                  <Option value="17">17</Option>
+                  <Option value="16">16</Option>
+                  <Option value="15">15</Option>
+                </Select>
+              </FormControl>
+              <Button
+                type="submit"
+                disabled={!questionInput}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const qI = questionInput.split("\n");
+
+                  qI.forEach((question) => {
+                    if (question.trim().length > 0) {
+                      questionAdderHandler(question);
+                    }
+                  });
+                }}
+                sx={{ ml: "auto", borderRadius: "sm" }}
+              >
+                Add Question
+              </Button>
+            </Box>
+          }
+        />
+      </FormControl>
+    </>
   );
 }
 
