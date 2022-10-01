@@ -4,7 +4,6 @@ import { useStateContext } from "../context/stateContext";
 import stringSimilarity from "string-similarity";
 import { v4 as uuid } from "uuid";
 import {
-  Box,
   Button,
   FormLabel,
   Option,
@@ -14,6 +13,8 @@ import {
 } from "@mui/joy";
 
 import FormControl from "@mui/joy/FormControl";
+import ModalFooter from "./ModalFooter";
+import ModalTitle from "../ModalTitle";
 
 function QuestionAdder() {
   const inputRef = useRef();
@@ -229,128 +230,119 @@ function QuestionAdder() {
     //   </div>
     // </form>
     <>
+      <ModalTitle text="Add Question" />
       <FormControl
         sx={{
           width: "100%",
         }}
       >
-        <FormLabel>Add Question</FormLabel>
         <Textarea
           placeholder="Type here…"
           ref={inputRef}
           size="lg"
+          sx={{ minWidth: 800 }}
           type="text"
           value={questionInput}
           onChange={(e) => setQuestionInput(e.target.value)}
           name="question input"
           id="question_input"
           minRows={10}
-          endDecorator={
-            <Box
+          maxRows={30}
+        />
+        <ModalFooter>
+          <FormControl>
+            <FormLabel>Month:</FormLabel>
+            <Select
+              componentsProps={{
+                listbox: {
+                  sx: {
+                    maxHeight: 200,
+                    overflow: "auto", // required for scrolling
+                  },
+                },
+              }}
+              placeholder="Month"
+              defaultValue={monthInput.month}
+              value={monthInput.month}
+              onChange={(e, n) => monthInputHandler(e, n, "month")}
+              name="month"
               sx={{
-                display: "flex",
-                gap: "var(--Textarea-paddingBlock)",
-                pt: "var(--Textarea-paddingBlock)",
-                borderTop: "1px solid",
-                borderColor: "divider",
-                flex: "auto",
-                alignItems: "center",
+                width: 120,
+                [`& .${selectClasses.indicator}`]: {
+                  transition: "0.2s",
+                  [`&.${selectClasses.expanded}`]: {
+                    transform: "rotate(-180deg)",
+                  },
+                },
               }}
             >
-              <FormControl>
-                <FormLabel>Month:</FormLabel>
-                <Select
-                  componentsProps={{
-                    listbox: {
-                      sx: {
-                        maxHeight: 200,
-                        overflow: "auto", // required for scrolling
-                      },
-                    },
-                  }}
-                  placeholder="Month"
-                  defaultValue={monthInput.month}
-                  value={monthInput.month}
-                  onChange={(e, n) => monthInputHandler(e, n, "month")}
-                  name="month"
-                  sx={{
-                    width: 120,
-                    [`& .${selectClasses.indicator}`]: {
-                      transition: "0.2s",
-                      [`&.${selectClasses.expanded}`]: {
-                        transform: "rotate(-180deg)",
-                      },
-                    },
-                  }}
-                >
-                  <Option value="Jan">Jan</Option>
-                  <Option value="Feb">Feb</Option>
-                  <Option value="Mar">Mar</Option>
-                  <Option value="Apr">Apr</Option>
-                  <Option value="May">May</Option>
-                  <Option value="Jun">Jun</Option>
-                  <Option value="Jul">Jul</Option>
-                  <Option value="Aug">Aug</Option>
-                  <Option value="Sep">Sep</Option>
-                  <Option value="Oct">Oct</Option>
-                  <Option value="Nov">Nov</Option>
-                  <Option value="Dec">Dec</Option>
-                </Select>
-              </FormControl>
-              <FormControl>
-                <FormLabel>Year:</FormLabel>
-                <Select
-                  componentsProps={{
-                    listbox: {
-                      sx: {
-                        maxHeight: 200,
-                        overflow: "auto", // required for scrolling
-                      },
-                    },
-                  }}
-                  sx={{
-                    width: 120,
-                    [`& .${selectClasses.indicator}`]: {
-                      transition: "0.2s",
-                      [`&.${selectClasses.expanded}`]: {
-                        transform: "rotate(-180deg)",
-                      },
-                    },
-                  }}
-                  name="year"
-                  value={monthInput.year}
-                  onChange={(e, n) => monthInputHandler(e, n, "year")}
-                >
-                  <Option value="22">22</Option>
-                  <Option value="21">21</Option>
-                  <Option value="20">20</Option>
-                  <Option value="19">19</Option>
-                  <Option value="18">18</Option>
-                  <Option value="17">17</Option>
-                  <Option value="16">16</Option>
-                  <Option value="15">15</Option>
-                </Select>
-              </FormControl>
-              <Button
-                type="submit"
-                disabled={!questionInput}
-                onClick={(e) => {
-                  e.preventDefault();
-                  const qI = questionInput.split("\n");
+              <Option value="Jan">Jan</Option>
+              <Option value="Feb">Feb</Option>
+              <Option value="Mar">Mar</Option>
+              <Option value="Apr">Apr</Option>
+              <Option value="May">May</Option>
+              <Option value="Jun">Jun</Option>
+              <Option value="Jul">Jul</Option>
+              <Option value="Aug">Aug</Option>
+              <Option value="Sep">Sep</Option>
+              <Option value="Oct">Oct</Option>
+              <Option value="Nov">Nov</Option>
+              <Option value="Dec">Dec</Option>
+            </Select>
+          </FormControl>
+          <FormControl>
+            <FormLabel>Year:</FormLabel>
+            <Select
+              componentsProps={{
+                listbox: {
+                  sx: {
+                    maxHeight: 200,
+                    overflow: "auto", // required for scrolling
+                  },
+                },
+              }}
+              sx={{
+                width: 120,
+                [`& .${selectClasses.indicator}`]: {
+                  transition: "0.2s",
+                  [`&.${selectClasses.expanded}`]: {
+                    transform: "rotate(-180deg)",
+                  },
+                },
+              }}
+              name="year"
+              value={monthInput.year}
+              onChange={(e, n) => monthInputHandler(e, n, "year")}
+            >
+              <Option value="22">22</Option>
+              <Option value="21">21</Option>
+              <Option value="20">20</Option>
+              <Option value="19">19</Option>
+              <Option value="18">18</Option>
+              <Option value="17">17</Option>
+              <Option value="16">16</Option>
+              <Option value="15">15</Option>
+            </Select>
+          </FormControl>
+          <Button
+            variant="soft"
+            type="submit"
+            disabled={!questionInput}
+            onClick={(e) => {
+              e.preventDefault();
+              const qI = questionInput.split("\n");
 
-                  qI.forEach((question) => {
-                    if (question.trim().length > 0) {
-                      questionAdderHandler(question);
-                    }
-                  });
-                }}
-                sx={{ ml: "auto", borderRadius: "sm" }}
-              >
-                Add Question
-              </Button>
-            </Box>
-          }
-        />
+              qI.forEach((question) => {
+                if (question.trim().length > 0) {
+                  questionAdderHandler(question);
+                }
+              });
+            }}
+            sx={{ ml: "auto", borderRadius: "sm" }}
+          >
+            Add Question
+          </Button>
+        </ModalFooter>
       </FormControl>
     </>
   );

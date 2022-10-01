@@ -1,13 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import "./App.css";
 
-import stringSimilarity from "string-similarity";
+// import stringSimilarity from "string-similarity";
 
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useStateContext } from "./context/stateContext";
+import { Input } from "@mui/joy";
 function App() {
-  const { pdfQuestions, setPdfQuestions } = useStateContext();
+  const { setPdfQuestions } = useStateContext();
   const [fileURL, setFileURL] = useState(null);
 
   const [cachedPdfQuestions, setCachedPdfQuestions] = useState([]);
@@ -75,7 +77,7 @@ function App() {
 
   return (
     <div className="App">
-      <input type="file" onChange={fileChangeHandler} multiple />
+      <Input type="file" onChange={fileChangeHandler} multiple />
 
       {/* {fileURL &&
         fileURL.map((url, index) => {

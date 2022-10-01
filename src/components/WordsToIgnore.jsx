@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Box, FormLabel, Textarea } from "@mui/joy";
+import React, { useEffect } from "react";
 import { useStateContext } from "../context/stateContext";
 
 function WordsToIgnore() {
@@ -19,17 +21,17 @@ function WordsToIgnore() {
   }, [wordsToIgnore]);
 
   return (
-    <div>
-      <h4>Words to Ignore:</h4>
-      <textarea
+    <Box m={2}>
+      <FormLabel>Words to Ignore:</FormLabel>
+      <Textarea
+        placeholder="Type words to Ignore here..."
         onChange={valueChangeHandler}
         value={wordsToIgnore?.join(",") || ""}
         name="wordsToIgnore"
         id="wordsToIgnore"
-        cols="30"
-        rows="10"
-      ></textarea>
-    </div>
+        minRows="10"
+      ></Textarea>
+    </Box>
   );
 }
 

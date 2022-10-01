@@ -1,119 +1,130 @@
-body {
+* {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-size: 18px;
-  padding: 1em;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-}
+// body {
+//   margin: 0;
+//   font-family: Arial, Helvetica, sans-serif;
+//   -webkit-font-smoothing: antialiased;
+//   -moz-osx-font-smoothing: grayscale;
+//   font-size: 18px;
+// }
 
-input,
-select,
-button,
-.question {
-  padding: 0.5em 1em;
-  margin: 0.2em;
-  font-size: 18px;
-  border-radius: 4px;
-}
-input,
-button {
-  border: 1px solid black;
-}
-form {
-  width: 90vw;
-}
+// code {
+//   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+//     monospace;
+// }
 
-button {
-  background: white;
-  // color: white;
+// input,
+// select,
+// button,
+// .question {
+//   padding: 0.5em 1em;
+//   margin: 0.2em;
+//   font-size: 18px;
+//   border-radius: 4px;
+// }
+// input,
+// button {
+//   border: 1px solid black;
+// }
+// form {
+//   width: 90vw;
+// }
 
-  cursor: pointer;
+// button {
+//   background: white;
+//   // color: white;
 
-  &:disabled {
-    opacity: 0.5;
-  }
-  &:hover {
-    background-color: rgba(0, 0, 0, 1);
-    color: white;
-  }
-}
+//   cursor: pointer;
 
-textarea {
-  font-size: 18px;
-  font-family: Arial, Helvetica, sans-serif;
-}
+//   &:disabled {
+//     opacity: 0.5;
+//   }
+//   &:hover {
+//     background-color: rgba(0, 0, 0, 1);
+//     color: white;
+//   }
+// }
 
-.question-area-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-.right-container {
-  grid-column: 2/3;
-  position: relative;
-}
+// textarea {
+//   font-size: 18px;
+//   font-family: Arial, Helvetica, sans-serif;
+// }
 
-.right-wrapper {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 40vw;
-  padding: 1rem;
-  margin-right: 1rem;
-  max-height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
+// .question-area-container {
+//   display: grid;
+//   grid-template-columns: 1fr 1fr;
+// }
+// .right-container {
+//   grid-column: 2/3;
+//   position: relative;
+// }
 
-.question-container {
-  // border: 1px solid black;
-  border-radius: 6px;
-  padding: 1rem;
+// .right-wrapper {
+//   position: fixed;
+//   top: 0;
+//   right: 0;
+//   width: 40vw;
+//   padding: 1rem;
+//   margin-right: 1rem;
+//   max-height: 100vh;
+//   overflow-y: auto;
+//   overflow-x: hidden;
+// }
 
-  width: fit-content;
-}
+// .question-container {
+//   // border: 1px solid black;
+//   border-radius: 6px;
+//   padding: 1rem;
 
-.question {
-  border-radius: 6px;
+//   width: fit-content;
+// }
 
-  &:hover {
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-  }
+// .question {
+//   border-radius: 6px;
 
-  &.selected {
-    outline: 1px solid black;
-  }
-}
+//   &:hover {
+//     box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+//   }
 
-.related-question {
-  max-height: 50vh;
-  overflow-y: auto;
-}
+//   &.selected {
+//     outline: 1px solid black;
+//   }
+// }
 
-.questions-extras-container {
-  display: flex;
-}
+// .related-question {
+//   max-height: 50vh;
+//   overflow-y: auto;
+// }
 
-.questions-extras {
-  background-color: rgba(0, 0, 0, 0.1);
-  font-size: 12px;
-  border-radius: 100vh;
-  margin: 2px;
-  margin-bottom: 6px;
-  padding: 2px 8px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  color: black;
-}
+// .questions-extras-container {
+//   display: flex;
+// }
 
-.questions-extras-month {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: white;
-  color: black;
-  margin-right: 1rem;
-}
+// .questions-extras {
+//   background-color: rgba(0, 0, 0, 0.1);
+//   font-size: 12px;
+//   border-radius: 100vh;
+//   margin: 2px;
+//   margin-bottom: 6px;
+//   padding: 2px 8px;
+//   font-weight: bold;
+//   letter-spacing: 1px;
+//   color: black;
+// }
+
+// .questions-extras-month {
+//   border: 1px solid rgba(0, 0, 0, 0.1);
+//   background-color: white;
+//   color: black;
+//   margin-right: 1rem;
+// }
+
+// // joy ui overrides
+// .JoySelect-root button:hover {
+//   background-color: initial !important;
+//   color: initial !important;
+// }

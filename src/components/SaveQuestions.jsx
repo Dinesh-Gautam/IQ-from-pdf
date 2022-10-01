@@ -1,13 +1,30 @@
+import {
+  Box,
+  Button,
+  FormHelperText,
+  FormLabel,
+  Option,
+  Select,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/joy";
+import FormControl from "@mui/joy/FormControl";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useStateContext } from "../context/stateContext";
+import ModalFooter from "./ModalFooter";
+import ModalTitle from "../ModalTitle";
 
-function SaveQuestions() {
-  const { questions, setQuestions } = useStateContext();
+function SaveQuestions({ type }) {
+  const { questions, setQuestions, autoSave, setAutoSave } = useStateContext();
 
   const [saveName, setSaveName] = useState("");
   const [saveNameSelect, setSaveNameSelect] = useState("");
   const [savedNamesState, setSavedNamesState] = useState([]);
+
+  const [checked, setChecked] = useState(autoSave.checked || false);
+
   const saveBtnHandler = () => {
     if (!saveName) {
       alert("Please enter a name");
@@ -33,6 +50,16 @@ function SaveQuestions() {
       alert("select name to get from localStorage");
       return;
     }
+
+    const autoSave = {
+      checked,
+      name: saveNameSelect,
+    };
+
+    localStorage.setItem("autoSave", JSON.stringify(autoSave));
+
+    setAutoSave(autoSave);
+
     const data = JSON.parse(localStorage.getItem(saveNameSelect));
     if (!data) {
       alert("No data found in local storage");
@@ -53,53 +80,132 @@ function SaveQuestions() {
     setSaveNameSelect(savedNames[0] || null);
   }, []);
 
-  return (
-    <div>
-      <h4>Save Data:</h4>
-      <div>
-        <input
+  return type === "export" ? (
+    <>
+      <ModalTitle text="Export Data" />
+      <FormControl>
+        <FormLabel>Select Name</FormLabel>
+        <Select
+          placeholder="Select Name"
+          sx={{
+            minWidth: 120,
+          }}
+          onChange={(e, value) => setSaveName(value)}
+          value={saveName}
+          name="save-data-name-select"
+          id="save-data-name-select"
+        >
+          {savedNamesState.map((name, index) => (
+            <Option key={index} value={name}>
+              {name}
+            </Option>
+          ))}
+        </Select>
+      </FormControl>
+      <Typography mt={1} textAlign="center">
+        Or
+      </Typography>
+
+      <FormControl>
+        <TextField
+          label="Name"
+          placeholder="type"
           onChange={(e) => setSaveName(e.target.value)}
           value={saveName}
           type="text"
           name="save-data-name"
         />
-        <button onClick={saveBtnHandler}>Save to local Storage</button>
-      </div>
-      {savedNamesState.length > 0 && (
-        <div>
-          <select
-            onChange={(e) => setSaveNameSelect(e.target.value)}
+      </FormControl>
+
+      <ModalFooter>
+        <Button variant="soft" onClick={saveBtnHandler}>
+          Save to local Storage
+        </Button>
+      </ModalFooter>
+    </>
+  ) : (
+    <>
+      <ModalTitle text="Import Data" />
+      {type === "import" && savedNamesState.length > 0 ? (
+        <>
+          <FormControl
+            orientation="horizontal"
+            sx={{ mb: 2, width: 300, justifyContent: "space-between" }}
+          >
+            <Box>
+              <FormLabel>Auto Save</FormLabel>
+              {autoSave.name && checked && (
+                <FormHelperText sx={{ mt: 0 }}>
+                  Saving to {autoSave.name}
+                </FormHelperText>
+              )}
+            </Box>
+
+            <Switch
+              checked={checked}
+              onChange={(event) => setChecked(event.target.checked)}
+              color={checked ? "primary" : "neutral"}
+              variant={checked ? "solid" : "outlined"}
+              endDecorator={checked ? "On" : "Off"}
+              componentsProps={{
+                endDecorator: {
+                  sx: {
+                    minWidth: 24,
+                  },
+                },
+              }}
+            />
+          </FormControl>
+          <Select
+            sx={{
+              minWidth: 120,
+            }}
+            onChange={(e, value) => setSaveNameSelect(value)}
             value={saveNameSelect}
             name="save-data-name-select"
             id="save-data-name-select"
           >
             {savedNamesState.map((name, index) => (
-              <option key={index} value={name}>
+              <Option key={index} value={name}>
                 {name}
-              </option>
+              </Option>
             ))}
-          </select>
-          <button onClick={getSavedBtnHandler}>Get from local Storage</button>
-          <button
-            onClick={() => {
-              localStorage.removeItem(saveNameSelect);
-              const newArr = savedNamesState.filter(
-                (name) => name !== saveNameSelect
-              );
-              localStorage.setItem(
-                "questions-set-name",
-                JSON.stringify(newArr)
-              );
-              setSavedNamesState(newArr);
-              setSaveNameSelect(newArr[0] || null);
-              alert("cleared: " + saveNameSelect);
-            }}
-          >
-            Clear Local Storage
-          </button>
-        </div>
+          </Select>
+          <ModalFooter>
+            <Button
+              onClick={() => {
+                const really = window.confirm(
+                  "Do you really want to delete data of " + saveNameSelect
+                );
+
+                if (!really) return;
+
+                localStorage.removeItem(saveNameSelect);
+                const newArr = savedNamesState.filter(
+                  (name) => name !== saveNameSelect
+                );
+                localStorage.setItem(
+                  "questions-set-name",
+                  JSON.stringify(newArr)
+                );
+                setSavedNamesState(newArr);
+                setSaveNameSelect(newArr[0] || null);
+                alert("cleared: " + saveNameSelect);
+              }}
+            >
+              Delete
+            </Button>
+            <Button variant="soft" onClick={getSavedBtnHandler}>
+              Import
+            </Button>
+          </ModalFooter>
+        </>
+      ) : (
+        <Typography mt={0.5} mb={2} textColor="text.tertiary">
+          No data to import.
+        </Typography>
       )}
-    </div>
+    </>
   );
 }
 
