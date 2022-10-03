@@ -7,6 +7,11 @@ export const useStateContext = () => {
   return useContext(stateContext);
 };
 
+export const pdfInfoInit = {
+  clickedId: null,
+  pdfAdded: [],
+};
+
 function StateProvider({ children }) {
   const [questions, setQuestions] = useState({ questions: [], related: [] });
   const [pdfQuestions, setPdfQuestions] = useState([]);
@@ -14,6 +19,7 @@ function StateProvider({ children }) {
   const [selectedQuestion, setSelectedQuestion] = useState([]);
   const [modal, setModal] = useState({ open: false, type: null });
   const [autoSave, setAutoSave] = useState({ checked: false, name: null });
+  const [pdfInfo, setPdfInfo] = useState(pdfInfoInit);
 
   const [edit, setEdit] = useState({
     editing: false,
@@ -56,6 +62,8 @@ function StateProvider({ children }) {
     setEdit,
     autoSave,
     setAutoSave,
+    pdfInfo,
+    setPdfInfo,
   };
   return (
     <stateContext.Provider value={value}>{children}</stateContext.Provider>

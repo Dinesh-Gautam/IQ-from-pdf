@@ -14,12 +14,13 @@ import {
 
 import FormControl from "@mui/joy/FormControl";
 import ModalFooter from "./ModalFooter";
-import ModalTitle from "../ModalTitle";
+import ModalTitle from "./ModalTitle";
 
-function QuestionAdder() {
+function QuestionAdder({ pdfImport }) {
   const inputRef = useRef();
 
-  const { questions, setQuestions, pdfQuestions } = useStateContext();
+  const { questions, setQuestions, pdfQuestions, pdfInfo, setPdfInfo } =
+    useStateContext();
 
   const [questionInput, setQuestionInput] = useState("");
 
@@ -85,9 +86,25 @@ function QuestionAdder() {
   // }
 
   useEffect(() => {
-    const qI = pdfQuestions.flat().join("\n");
+    // const qI = pdfQuestions.flat().join("\n");
+    // setQuestionInput(qI);
+    const id = pdfInfo.clickedId || null;
+
+    console.log(id);
+    console.log(pdfQuestions);
+
+    if (id === null || !pdfQuestions.length) return;
+
+    console.log(pdfQuestions);
+
+    const clickedPdf = pdfQuestions.find((q) => q.id === id);
+
+    const qI = clickedPdf.text.join("\n");
     setQuestionInput(qI);
-  }, [pdfQuestions]);
+    console.log(clickedPdf.dateInfo);
+    monthInputHandler(null, clickedPdf.dateInfo.month, "month");
+    monthInputHandler(null, clickedPdf.dateInfo.year, "year");
+  }, [pdfInfo.clickedId, pdfQuestions]);
 
   function questionAdderHandler(questionInput) {
     const QuestionObj = {
@@ -140,6 +157,14 @@ function QuestionAdder() {
         questions: [...prev.questions, { ...QuestionObj }],
       }));
     }
+
+    if (pdfQuestions && pdfInfo.clickedId) {
+      setPdfInfo((prev) => ({
+        ...prev,
+        pdfAdded: [...prev.pdfAdded, pdfInfo.clickedId],
+      }));
+    }
+
     setQuestionInput("");
     inputRef.current.focus();
   }
@@ -230,7 +255,7 @@ function QuestionAdder() {
     //   </div>
     // </form>
     <>
-      <ModalTitle text="Add Question" />
+      {!pdfImport && <ModalTitle text="Add Question" />}
       <FormControl
         sx={{
           width: "100%",

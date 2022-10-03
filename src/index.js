@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.scss";
 import QuestionInterface from "./QuestionInterface";
@@ -9,6 +9,7 @@ import SideBar from "./components/SideBar";
 import { Box } from "@mui/joy";
 import RenderModal from "./components/RenderModal";
 import RelatedQuestions from "./components/RelatedQuestions";
+import { GlobalWorkerOptions } from "pdfjs-dist";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -16,6 +17,15 @@ const defaultProps = {
   variant: "outlined",
   color: "neutral",
 };
+
+function PdfInit() {
+  useEffect(() => {
+    GlobalWorkerOptions.workerSrc =
+      window.location.origin + "/pdf.worker.min.js";
+  }, []);
+
+  return <></>;
+}
 
 const customTheme = extendTheme({
   colorSchemes: {
@@ -52,6 +62,7 @@ const customTheme = extendTheme({
 
 root.render(
   <React.StrictMode>
+    <PdfInit />
     <StateProvider>
       <CssVarsProvider theme={customTheme}>
         <Box

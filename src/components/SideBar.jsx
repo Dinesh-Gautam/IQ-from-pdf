@@ -16,6 +16,7 @@ import { useStateContext } from "../context/stateContext";
 function SideBar() {
   const { mode, setMode } = useColorScheme();
   const { setModal } = useStateContext();
+
   const handleListClick = (type) => {
     setModal({ open: true, type });
   };
@@ -60,6 +61,16 @@ function SideBar() {
             <Typography fontWeight="lg">Add Question</Typography>
           </ListItemButton>
         </ListItem>
+        <ListDivider />
+        <ListItem>
+          <ListItemButton
+            onClick={() => handleListClick("importPdf")}
+            sx={{ borderRadius: "sm" }}
+          >
+            Import PDF
+          </ListItemButton>
+        </ListItem>
+
         <ListDivider />
         <ListItem>
           <ListItemButton

@@ -3,6 +3,7 @@ import React from "react";
 import { useStateContext } from "../context/stateContext";
 import CopyData from "./CopyData";
 import EditDate from "./EditDate";
+import ImportPdf from "./ImportPdf";
 import QuestionAdder from "./QuestionAdder";
 import SaveQuestions from "./SaveQuestions";
 
@@ -22,16 +23,16 @@ function RenderModal() {
           justifyContent: "center",
         }}
       >
-        <ModalDialog>
+        <ModalDialog layout={modal.type === "importPdf" ? "fullscreen" : null}>
           <ModalClose variant="plain" />
 
-          <Box>
-            {modal.type === "addQuestion" && <QuestionAdder />}
-            {modal.type === "CopyData" && <CopyData />}
-            {modal.type === "import" && <SaveQuestions type={modal.type} />}
-            {modal.type === "export" && <SaveQuestions type={modal.type} />}
-            {modal.type === "edit" && <EditDate />}
-          </Box>
+          {modal.type === "addQuestion" && <QuestionAdder />}
+          {modal.type === "CopyData" && <CopyData />}
+          {modal.type === "import" && <SaveQuestions type={modal.type} />}
+          {modal.type === "export" && <SaveQuestions type={modal.type} />}
+          {modal.type === "edit" && <EditDate />}
+          {modal.type === "importPdf" && <ImportPdf />}
+          {/* </Box> */}
         </ModalDialog>
         {/* <Sheet
           variant="outlined"

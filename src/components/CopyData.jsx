@@ -2,7 +2,7 @@ import { Box, Button, Checkbox, Sheet } from "@mui/joy";
 import React, { useState } from "react";
 import { useStateContext } from "../context/stateContext";
 import ModalFooter from "./ModalFooter";
-import ModalTitle from "../ModalTitle";
+import ModalTitle from "./ModalTitle";
 import { useGetRelated } from "../QuestionInterface";
 
 function CopyData() {

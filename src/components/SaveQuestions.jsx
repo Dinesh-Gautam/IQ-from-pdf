@@ -14,7 +14,7 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { useStateContext } from "../context/stateContext";
 import ModalFooter from "./ModalFooter";
-import ModalTitle from "../ModalTitle";
+import ModalTitle from "./ModalTitle";
 
 function SaveQuestions({ type }) {
   const { questions, setQuestions, autoSave, setAutoSave } = useStateContext();
