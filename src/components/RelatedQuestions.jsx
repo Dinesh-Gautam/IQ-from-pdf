@@ -44,6 +44,18 @@ function RelatedQuestions() {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [qandsq, setQandsq] = useState({});
 
+  const copyQuestionHandler = ({ pid, rid }) => {
+    let text = "";
+    text = rid
+      ? questions.related.find((q) => q.id === rid).question
+      : getRelated(sq.id)
+          .map((q) => q.question)
+          .join("\n");
+
+    console.log(text);
+    navigator.clipboard.writeText(text);
+  };
+
   const onMouseEnter = (id) => {
     setAnchorEl(null);
     setShowMoreOptions({ show: true, id });
@@ -91,7 +103,24 @@ function RelatedQuestions() {
           </ListItemDecorator>
           Edit
         </MenuItem>
-
+        <MenuItem
+          onClick={(e) => {
+            copyQuestionHandler({ rid: q.id });
+            handleClose();
+          }}
+        >
+          <ListItemDecorator />
+          Copy
+        </MenuItem>
+        <MenuItem
+          onClick={(e) => {
+            copyQuestionHandler({ pid: sq.id });
+            handleClose();
+          }}
+        >
+          <ListItemDecorator />
+          Copy All
+        </MenuItem>
         <MenuItem
           onClick={(e) => {
             unGroupRelatedHandler(q.id);

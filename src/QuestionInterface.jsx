@@ -112,6 +112,13 @@ function QuestionInterface() {
     setSelectedQuestion([]);
   };
 
+  const copyQuestionHandler = () => {
+    const text = selectedQuestion.map((q) => q.question).join("\n");
+
+    console.log(text);
+    navigator.clipboard.writeText(text);
+  };
+
   const undoDeleteBtnHandler = () => {
     console.log("Undo");
     const newArr = undo[undo.length - 1];
@@ -217,6 +224,15 @@ function QuestionInterface() {
             <Edit />
           </ListItemDecorator>
           Edit
+        </MenuItem>
+        <MenuItem
+          onClick={(e) => {
+            copyQuestionHandler();
+            handleClose();
+          }}
+        >
+          <ListItemDecorator />
+          Copy
         </MenuItem>
         {selectedQuestion.length > 1 && (
           <MenuItem
