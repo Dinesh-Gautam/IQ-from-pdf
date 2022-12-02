@@ -269,7 +269,7 @@ function QuestionInterface() {
               <Button onClick={undoDeleteBtnHandler}>Undo Delete</Button>
             </div>
           )}
-          <Typography level="h4">QuestionArea</Typography>
+          <Typography level="h4">Question Area</Typography>
 
           {questions.questions.length > 0 && (
             <>

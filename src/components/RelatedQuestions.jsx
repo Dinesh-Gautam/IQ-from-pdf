@@ -149,7 +149,14 @@ function RelatedQuestions() {
         Related Questions
       </Typography>
 
-      <Stack direction="column" gap={1}>
+      <Stack
+        sx={{
+          position: "sticky",
+          top: "1rem",
+        }}
+        direction="column"
+        gap={1}
+      >
         {questions.questions
           .filter((q) => selectedQuestion.some((sq) => sq.id === q.id))
           .map((sq, index) => {

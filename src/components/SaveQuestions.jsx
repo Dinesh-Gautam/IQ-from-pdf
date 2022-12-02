@@ -12,14 +12,14 @@ import {
 import FormControl from "@mui/joy/FormControl";
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { useStateContext } from "../context/stateContext";
+import { saveQuestions, useStateContext } from "../context/stateContext";
 import ModalFooter from "./ModalFooter";
 import ModalTitle from "./ModalTitle";
 
 function SaveQuestions({ type }) {
   const { questions, setQuestions, autoSave, setAutoSave } = useStateContext();
 
-  const [saveName, setSaveName] = useState("");
+  const [saveName, setSaveName] = useState(autoSave.name ?? "");
   const [saveNameSelect, setSaveNameSelect] = useState("");
   const [savedNamesState, setSavedNamesState] = useState([]);
 
@@ -36,7 +36,8 @@ function SaveQuestions({ type }) {
       savedNames.push(saveName);
     }
     localStorage.setItem("questions-set-name", JSON.stringify(savedNames));
-    localStorage.setItem(saveName, JSON.stringify(questions));
+    saveQuestions(saveName, questions);
+    // localStorage.setItem(saveName, JSON.stringify(questions));
     setSavedNamesState(savedNames);
     if (saveNameSelect === null) {
       setSaveNameSelect(savedNames[0] || saveName);

@@ -12,8 +12,30 @@ export const pdfInfoInit = {
   pdfAdded: [],
 };
 
+export function saveQuestions(name, data) {
+  const prevVersion = JSON.parse(localStorage.getItem(name + "ver")) || [];
+  const prevData = localStorage.getItem(name);
+
+  if (prevData) {
+    const ver = prevVersion.length;
+    const date = new Date().toLocaleDateString();
+    prevVersion.push(name + " " + date + " " + ver);
+    localStorage.setItem(name + "ver", JSON.stringify(prevVersion));
+    localStorage.setItem(name + " " + date + " " + ver, prevData);
+  }
+
+  localStorage.setItem(name, JSON.stringify(data));
+}
+
+// function garbageCollectOldQuestions(prevVersion) {
+
+// }
+
 function StateProvider({ children }) {
-  const [questions, setQuestions] = useState({ questions: [], related: [] });
+  const [questions, setQuestions] = useState({
+    questions: [],
+    related: [],
+  });
   const [pdfQuestions, setPdfQuestions] = useState([]);
   const [wordsToIgnore, setWordsToIgnore] = useState([]);
   const [selectedQuestion, setSelectedQuestion] = useState([]);
@@ -42,7 +64,7 @@ function StateProvider({ children }) {
       clearTimeout(autoSaveRef.current);
 
       autoSaveRef.current = setTimeout(() => {
-        localStorage.setItem(autoSave.name, JSON.stringify(questions));
+        saveQuestions(autoSave.name, questions);
       }, 500);
     }
   }, [questions]);
