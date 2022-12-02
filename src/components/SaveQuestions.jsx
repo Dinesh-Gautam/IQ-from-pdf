@@ -21,8 +21,10 @@ function SaveQuestions({ type }) {
 
   const [saveName, setSaveName] = useState(autoSave.name ?? "");
   const [saveNameSelect, setSaveNameSelect] = useState("");
+  const [prevVerSelect, setPrevVerSelect] = useState("current");
   const [savedNamesState, setSavedNamesState] = useState([]);
 
+  const [prevVersions, setPrevVersions] = useState([]);
   const [checked, setChecked] = useState(autoSave.checked || false);
 
   const saveBtnHandler = () => {
@@ -46,6 +48,12 @@ function SaveQuestions({ type }) {
     alert("saved");
   };
 
+  useEffect(() => {
+    const verNames = JSON.parse(localStorage.getItem(saveNameSelect + "ver"));
+
+    setPrevVersions(verNames);
+  }, [saveNameSelect]);
+
   const getSavedBtnHandler = () => {
     if (!saveNameSelect) {
       alert("select name to get from localStorage");
@@ -61,7 +69,13 @@ function SaveQuestions({ type }) {
 
     setAutoSave(autoSave);
 
-    const data = JSON.parse(localStorage.getItem(saveNameSelect));
+    let nameSelect = saveNameSelect;
+
+    if (prevVerSelect !== "current") {
+      nameSelect = prevVerSelect;
+    }
+
+    const data = JSON.parse(localStorage.getItem(nameSelect));
     if (!data) {
       alert("No data found in local storage");
       return;
@@ -172,6 +186,32 @@ function SaveQuestions({ type }) {
               </Option>
             ))}
           </Select>
+
+          {prevVersions && (
+            <FormControl
+              sx={{
+                mt: 2,
+              }}
+            >
+              <FormLabel> Previous Versions</FormLabel>
+              <Select
+                sx={{
+                  minWidth: 120,
+                }}
+                onChange={(e, value) => {
+                  setPrevVerSelect(value);
+                }}
+                value={prevVerSelect || "current"}
+              >
+                <Option value={"current"}>Current</Option>
+                {prevVersions?.map(({ id, date }, index) => (
+                  <Option key={id} value={id}>
+                    {index + ". " + date}
+                  </Option>
+                ))}
+              </Select>
+            </FormControl>
+          )}
           <ModalFooter>
             <Button
               onClick={() => {

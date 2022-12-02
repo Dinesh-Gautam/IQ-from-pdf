@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-
+import { v4 as uuidv4 } from "uuid";
 const stateContext = createContext();
 
 export const useStateContext = () => {
@@ -19,9 +19,10 @@ export function saveQuestions(name, data) {
   if (prevData) {
     const ver = prevVersion.length;
     const date = new Date().toLocaleDateString();
-    prevVersion.push(name + " " + date + " " + ver);
+    const id = uuidv4();
+    prevVersion.push({ id, date });
     localStorage.setItem(name + "ver", JSON.stringify(prevVersion));
-    localStorage.setItem(name + " " + date + " " + ver, prevData);
+    localStorage.setItem(id, prevData);
   }
 
   localStorage.setItem(name, JSON.stringify(data));
