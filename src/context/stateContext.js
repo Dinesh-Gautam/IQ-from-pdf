@@ -20,7 +20,7 @@ export function saveQuestions(name, data) {
     const ver = prevVersion.length;
     const date = new Date().toLocaleDateString();
     const id = uuidv4();
-    prevVersion.push({ id, date });
+    prevVersion.shift({ id, date });
     localStorage.setItem(name + "ver", JSON.stringify(prevVersion));
     localStorage.setItem(id, prevData);
   }
@@ -54,7 +54,7 @@ function StateProvider({ children }) {
 
   useEffect(() => {
     const as = JSON.parse(localStorage.getItem("autoSave"));
-
+    as.checked = false;
     if (as) {
       setAutoSave(as);
     }

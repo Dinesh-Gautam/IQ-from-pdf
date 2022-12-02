@@ -20,7 +20,7 @@ function SaveQuestions({ type }) {
   const { questions, setQuestions, autoSave, setAutoSave } = useStateContext();
 
   const [saveName, setSaveName] = useState(autoSave.name ?? "");
-  const [saveNameSelect, setSaveNameSelect] = useState("");
+  const [saveNameSelect, setSaveNameSelect] = useState(autoSave.name ?? "");
   const [prevVerSelect, setPrevVerSelect] = useState("current");
   const [savedNamesState, setSavedNamesState] = useState([]);
 
